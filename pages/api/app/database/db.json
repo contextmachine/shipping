@@ -1,1 +1,34 @@
-{"users":[{"id":"1cb468dd-0f6e-4551-9834-337de6adb6f0","name":"John Doe","email":"john@doe.com","phone":"0000000000","password":"$2a$10$QIxJVUKlWLt53Dcw0IdG/.48ihT7HBouTO/fENLvD3vAesOXpMoPq","role":"admin","createdAt":"2023-02-25T07:45:49.457Z"}],"tokens":[],"posts":[],"comments":[]}
+{
+  "users": [
+    {
+      "id": "1cb468dd-0f6e-4551-9834-337de6adb6f0",
+      "name": "John Doe",
+      "email": "john@doe.com",
+      "phone": "0000000000",
+      "password": "$2a$10$QIxJVUKlWLt53Dcw0IdG/.48ihT7HBouTO/fENLvD3vAesOXpMoPq",
+      "role": "admin",
+      "createdAt": "2023-02-25T07:45:49.457Z"
+    }
+  ],
+  "tokens": [
+    {
+      "userId": "1cb468dd-0f6e-4551-9834-337de6adb6f0",
+      "value": "c8eee973-6e1b-4346-89d5-a05dc8feae52"
+    },
+    {
+      "userId": "1cb468dd-0f6e-4551-9834-337de6adb6f0",
+      "value": "d71acdd7-a296-431b-bb4d-f02c9b503531"
+    }
+  ],
+  "posts": [
+    {
+      "id": "440837fb-200f-41e2-ae54-8f7cfa3146d7",
+      "userId": "1cb468dd-0f6e-4551-9834-337de6adb6f0",
+      "title": "hello",
+      "slug": "hello",
+      "content": "wtf",
+      "image": "hello",
+      "publishedAt": "2023-06-02T02:22:08.718Z"
+    }
+  ]
+}

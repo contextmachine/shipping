@@ -1,4 +1,4 @@
-import { _Head, Comment } from "@/components";
+import { _Head } from "@/components";
 import { useRouter } from "next/router";
 import useSWR from 'swr'
 import { Post } from "../api/app/interfaces"
@@ -6,7 +6,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 
 export default function PostDetails() {
-    const {query} = useRouter()
+    const { query } = useRouter()
 
     const { data } = useSWR<Post>(`/api/posts/${query.id}`, async (url: string) => {
         return fetch(url).then(res => res.json())
@@ -26,14 +26,13 @@ export default function PostDetails() {
 
             <article className="card mb-5">
                 <Image src={`/upload/${data?.image}`} className="card-img-top" width="500" height="500" alt={data?.image as string} />
-                
+
                 <div className="card-body">
                     <h2 className="card-title">{data?.title}</h2>
                     <p className="card-text mt-3 text-justify">{data?.content}</p>
                 </div>
-            </article>  
-            
-            <Comment postId={data?.id as string} />
+            </article>
+
         </main>
     </>
 }

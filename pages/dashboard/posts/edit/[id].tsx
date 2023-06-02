@@ -1,10 +1,10 @@
-import {Post, User} from "@/pages/api/app/interfaces"
+import { Post, User } from "@/pages/api/app/interfaces"
 import { toBase64 } from "@/utils"
 import { useRouter } from "next/router"
-import {FormEvent, useState, useRef, ChangeEvent, useEffect} from "react"
+import { FormEvent, useState, useRef, ChangeEvent, useEffect } from "react"
 import useSWR from 'swr'
 import Link from "next/link";
-import {Alert, AlertType, _Head} from "@/components";
+import { Alert, AlertType, _Head } from "@/components";
 
 export default function Edit() {
     const router = useRouter()
