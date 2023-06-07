@@ -1,5 +1,5 @@
-import PostRepository from "./PostRepository"
+import ShippingRepository from "./ShippingRepository"
 import UserRepository from "./UserRepository"
 import TokenRepository from "./TokenRepository"
 
-export { PostRepository, UserRepository, TokenRepository }
+export { ShippingRepository, UserRepository, TokenRepository }

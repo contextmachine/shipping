@@ -1,6 +1,6 @@
 import {describe} from "@jest/globals"
 import {Post} from "@/pages/api/app/interfaces"
-import PostModel from "../../pages/api/app/models/PostModel"
+import PostModel from "../../pages/api/app/models/ShippingModel"
 
 describe('Post tests', () => {
     test('can initialize Post', () => {

@@ -1,11 +1,12 @@
+import { Shipping, User } from "@/pages/api/app/interfaces"
 import { toBase64 } from "@/utils"
-import {FormEvent, useState, useLayoutEffect, useRef, ChangeEvent, useEffect} from "react"
+import { useRouter } from "next/router"
+import { FormEvent, useState, useRef, ChangeEvent, useEffect } from "react"
+import useSWR from 'swr'
 import Link from "next/link";
-import {User} from "@/pages/api/app/interfaces";
-import {useRouter} from "next/router";
-import {Alert, AlertType, _Head} from "@/components";
+import { Alert, AlertType, _Head } from "@/components";
 
-export default function Create() {
+export default function Edit() {
     const router = useRouter()
 
     const [alert, setAlert] = useState<AlertType>()
@@ -26,8 +27,8 @@ export default function Create() {
         }
     })
 
-    useLayoutEffect(() => {
-        title.current?.focus()
+    const { data } = useSWR<Shipping>(`/api/posts/${router.query.id}`, async (url: string) => {
+        return fetch(url).then(res => res.json())
     })
 
     const handleOnChange = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -38,8 +39,8 @@ export default function Create() {
         e.preventDefault()
         showLoading(true)
 
-        const res = await fetch('/api/posts', {
-            method: 'post',
+        const res = await fetch(`/api/posts/${router.query.id}`, {
+            method: 'put',
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": "Bearer " + localStorage.getItem('token') as string
@@ -51,26 +52,22 @@ export default function Create() {
             })
         })
 
-        if (res.status === 200) {
-            const form = e.target as HTMLFormElement
-            form.reset()
-        }
-        
         showLoading(false)
+
         setAlert({
             display: true,
             status: res.status,
             concern: 'post',
-            action: 'create'
+            action: 'edit'
         })
     }
 
     return <>
-        <_Head title="Dashboard | Create post" />
+        <_Head title="Dashboard | Edit post" />
 
         <div className="container mt-5">
             <div className="d-flex justify-content-between align-items-center mb-5">
-                <h1>Create post</h1>
+                <h1>Edit post</h1>
 
                 <div className="d-flex align-items-center">
                     <Link href="/" className="btn btn-primary me-3">
@@ -87,20 +84,14 @@ export default function Create() {
             <div className="card shadow-sm">
                 <div className="card-body">
                     <form onSubmit={handleOnSubmit}>
-                        <div className="mb-3">
-                            <label htmlFor="title" className="form-label">Title</label>
-                            <input type="text" id="title" name="title" className="form-control" required ref={title} />
-                        </div>
+
 
                         <div className="mb-3">
                             <label htmlFor="file" className="form-label">Image</label>
-                            <input type="file" id="file" name="file" className="form-control" required onChange={handleOnChange} />
+                            <input type="file" id="file" name="file" className="form-control" onChange={handleOnChange} />
                         </div>
 
-                        <div className="mb-3">
-                            <label htmlFor="content" className="form-label">Content</label>
-                            <textarea id="content" name="content" className="form-control" required ref={content}></textarea>
-                        </div>
+
 
                         <button type="submit" className="btn btn-primary">
                             {loading && <div className="spinner-border spinner-border-sm me-1" role="status"></div>} Save

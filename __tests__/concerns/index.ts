@@ -15,7 +15,6 @@ export const refreshDatabase = () => {
             }
         ],
         tokens: [],
-        posts: [],
         comments: []
     }))
 }

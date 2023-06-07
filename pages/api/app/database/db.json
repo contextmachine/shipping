@@ -2,33 +2,87 @@
   "users": [
     {
       "id": "1cb468dd-0f6e-4551-9834-337de6adb6f0",
-      "name": "John Doe",
-      "email": "john@doe.com",
-      "phone": "0000000000",
+      "name": "admin",
+      "login": "admin",
       "password": "$2a$10$QIxJVUKlWLt53Dcw0IdG/.48ihT7HBouTO/fENLvD3vAesOXpMoPq",
       "role": "admin",
+      "createdAt": "2023-02-25T07:45:49.457Z"
+    },
+    {
+      "id": "1cb468dd-0f6e-4551-9830-337de6adb611",
+      "name": "Хогвартс, Англия",
+      "login": "hogwarts",
+      "password": "$2a$10$QIxJVUKlWLt53Dcw0IdG/.48ihT7HBouTO/fENLvD3vAesOXpMoPq",
+      "role": "user",
+      "createdAt": "2023-02-25T07:45:49.457Z"
+    },
+    {
+      "id": "1cb468dd-0f6e-4551-9830-337de6adb612",
+      "name": "Винтерфелл, Вестерос",
+      "login": "winterfell",
+      "password": "$2a$10$QIxJVUKlWLt53Dcw0IdG/.48ihT7HBouTO/fENLvD3vAesOXpMoPq",
+      "role": "user",
+      "createdAt": "2023-02-25T07:45:49.457Z"
+    },
+    {
+      "id": "1cb468dd-0f6e-4551-9830-337de6adb613",
+      "name": "Готем, США",
+      "login": "gotem",
+      "password": "$2a$10$QIxJVUKlWLt53Dcw0IdG/.48ihT7HBouTO/fENLvD3vAesOXpMoPq",
+      "role": "user",
+      "createdAt": "2023-02-25T07:45:49.457Z"
+    },
+    {
+      "id": "1cb468dd-0f6e-4551-9830-337de6adb614",
+      "name": "Мордор, Средиземье",
+      "login": "mordor",
+      "password": "$2a$10$QIxJVUKlWLt53Dcw0IdG/.48ihT7HBouTO/fENLvD3vAesOXpMoPq",
+      "role": "user",
+      "createdAt": "2023-02-25T07:45:49.457Z"
+    },
+    {
+      "id": "1cb468dd-0f6e-4551-9830-337de6adb615",
+      "name": "Балашиха, Московская область",
+      "login": "balashiha",
+      "password": "$2a$10$QIxJVUKlWLt53Dcw0IdG/.48ihT7HBouTO/fENLvD3vAesOXpMoPq",
+      "role": "user",
       "createdAt": "2023-02-25T07:45:49.457Z"
     }
   ],
   "tokens": [
     {
-      "userId": "1cb468dd-0f6e-4551-9834-337de6adb6f0",
-      "value": "c8eee973-6e1b-4346-89d5-a05dc8feae52"
+      "userId": "1cb468dd-0f6e-4551-9830-337de6adb611",
+      "value": "524c9d03-ab12-4924-a87a-ece81f40420b"
     },
     {
-      "userId": "1cb468dd-0f6e-4551-9834-337de6adb6f0",
-      "value": "d71acdd7-a296-431b-bb4d-f02c9b503531"
+      "userId": "1cb468dd-0f6e-4551-9830-337de6adb614",
+      "value": "ee9822d5-d77b-4360-aeca-55aed3d8aa53"
     }
   ],
-  "posts": [
+  "shippings": [
     {
-      "id": "440837fb-200f-41e2-ae54-8f7cfa3146d7",
-      "userId": "1cb468dd-0f6e-4551-9834-337de6adb6f0",
-      "title": "hello",
-      "slug": "hello",
-      "content": "wtf",
-      "image": "hello",
-      "publishedAt": "2023-06-02T02:22:08.718Z"
+      "id": "d361d118-0569-4aa6-8015-d87624c9c077",
+      "from": "1cb468dd-0f6e-4551-9830-337de6adb611",
+      "to": "1cb468dd-0f6e-4551-9830-337de6adb612",
+      "contentType": "золото",
+      "count": 100,
+      "status": "sended",
+      "createdAt": "2023-06-07T15:24:57.806Z",
+      "sendedAt": "2023-06-07T15:27:05.888Z",
+      "recievedAt": "",
+      "qr": "d361d118-0569-4aa6-8015-d87624c9c077_QR.png"
+    },
+    {
+      "id": "6732f919-44f9-4eb4-a65c-6e89dc0c2403",
+      "from": "1cb468dd-0f6e-4551-9830-337de6adb611",
+      "to": "1cb468dd-0f6e-4551-9830-337de6adb614",
+      "contentType": "дерево",
+      "count": 1,
+      "status": "recieved",
+      "createdAt": "2023-06-07T15:26:33.372Z",
+      "sendedAt": "2023-06-07T15:27:23.980Z",
+      "recievedAt": "2023-06-07T15:27:53.654Z",
+      "qr": "6732f919-44f9-4eb4-a65c-6e89dc0c2403_QR.png"
     }
   ]
 }

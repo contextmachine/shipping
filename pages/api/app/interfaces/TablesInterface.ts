@@ -1,10 +1,9 @@
-import {Post} from "./PostInterface";
+import {Shipping} from "./Shipping";
 import {User} from "./UserInterface";
 import {Token} from "./TokenInterface";
-import {Comment} from "./CommentInterface";
 
 export type Tables = {
-    posts?: Post[],
+    shippings?: Shipping[],
     users?: User[],
     tokens?: Token[],
     comments?: Comment[]

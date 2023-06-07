@@ -1,5 +1,5 @@
-import PostModel from "./PostModel"
+import ShippingModel from "./ShippingModel"
 import UserModel from "./UserModel"
 import TokenModel from "./TokenModel"
 
-export { PostModel, UserModel, TokenModel }
+export { ShippingModel, UserModel, TokenModel }

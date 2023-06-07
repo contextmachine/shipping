@@ -1,6 +1,6 @@
-import PostController from './PostController'
+import ShippingController from './ShippingController'
 import UserController from './UserController'
 import LoginController from './Authentication/LoginController'
 import LogoutController from './Authentication/LogoutController'
 
-export {PostController, UserController, LoginController, LogoutController}
+export { ShippingController, UserController, LoginController, LogoutController }

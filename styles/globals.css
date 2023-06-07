@@ -1,2 +1,23 @@
 @import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 @import '../node_modules/bootstrap-icons/font/bootstrap-icons.css';
+
+.status {
+    margin: 0 0 0 0;
+    border-radius: 10px;
+}
+.status[title='created'] {
+    background-color: #7FDBDA;
+}
+.status[title='sended'] {
+    background-color: #EDE682;
+}
+.status[title='recieved'] {
+    background-color: #ADE498;
+}
+
+.btn[title='send']{
+    background-color: #EDE682;
+}
+.btn[title='recieve']{
+    background-color: #ADE498;
+}

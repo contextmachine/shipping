@@ -1,0 +1,14 @@
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/utilities";
+
+$theme-colors: map-merge(
+  $theme-colors,
+  (
+    "created": #7FDBDA,
+    "sended": #EDE682,
+    "recieved":#ADE498, 
+  )
+);
+
+@import "bootstrap";

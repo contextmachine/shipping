@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import {FormEvent, useEffect, useLayoutEffect, useRef, useState} from "react"
-import {_Head} from "@/components";
+import { FormEvent, useEffect, useLayoutEffect, useRef, useState } from "react"
+import { _Head } from "@/components";
 
 const Login = () => {
     const router = useRouter()
@@ -13,9 +13,11 @@ const Login = () => {
 
     useEffect(() => {
         if (localStorage.getItem('user')) {
-            router.push('/dashboard')
+            router.push('/')
         }
     })
+
+    
 
     useLayoutEffect(() => {
         email.current?.focus()
@@ -27,7 +29,7 @@ const Login = () => {
 
         const res = await fetch('/api/login', {
             method: 'post',
-            headers: {"Content-Type": "application/json"},
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 "email": email.current!.value,
                 "password": password.current!.value
@@ -40,32 +42,28 @@ const Login = () => {
             localStorage.setItem('user', JSON.stringify(data.user))
             localStorage.setItem('token', data.token)
 
-            if (data.user.role === 'admin') {
-                await router.push('/dashboard')
-            } else {
-                await router.push('/')
-            }
+            
         }
 
         showAlert(true)
         showLoading(false)
     }
 
-    return  <>
+    return <>
         <_Head title="Log in" />
 
         <div className="container py-5" style={{ width: 450 }}>
             <h1 className="pb-4 text-center">Log in</h1>
 
             {alert && <div className="alert alert-danger">
-                Invalid email or password
+                Invalid login or password
             </div>}
 
             <div className="card shadow p-4 mb-3">
                 <form onSubmit={handleOnSubmit}>
                     <div className="mb-3">
-                        <label htmlFor="email" className="form-label">Email</label>
-                        <input type="email" id="email" name="email" className="form-control" required ref={email} />
+                        <label htmlFor="login" className="form-label">Login</label>
+                        <input type="text" id="login" name="login" className="form-control" required ref={email} />
                     </div>
 
                     <div className="mb-3">

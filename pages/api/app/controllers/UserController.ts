@@ -1,6 +1,6 @@
-import {NextApiResponse} from "next"
-import {User} from "@/pages/api/app/interfaces"
-import {UserRepository} from "@/pages/api/app/repositories"
+import { NextApiResponse } from "next"
+import { User } from "@/pages/api/app/interfaces"
+import { UserRepository } from "@/pages/api/app/repositories"
 
 export default class UserController {
     private res: NextApiResponse
@@ -11,11 +11,27 @@ export default class UserController {
         this.userRepository = new UserRepository()
     }
 
+    public getLocation = async (id: string) => {
+        await this.userRepository
+            .findOne(id)
+            .then((user: User) => this.res.status(200).json(user.name))
+            .catch(e => this.res.status(500).json({ status: 'error', message: e.message }))
+    }
+
+    public getLocations = async () => {
+        await this.userRepository
+            .findAll()
+            .then((users: User[]) => this.res.status(200).json(users
+                .filter(x => x.name !== 'admin')
+                .map(x => ({ name: x.name, id: x.id }))))
+            .catch(e => this.res.status(500).json({ status: 'error', message: e.message }))
+    }
+
     public getCollection = async () => {
         await this.userRepository
             .findAll()
             .then((users: User[]) => this.res.status(200).json(users))
-            .catch(e => this.res.status(500).json({status: 'error', message: e.message}))
+            .catch(e => this.res.status(500).json({ status: 'error', message: e.message }))
     }
 
     public getItem = async (id: string) => {
@@ -23,19 +39,19 @@ export default class UserController {
             .findOne(id)
             .then((user: User) => {
                 if (!user) {
-                    this.res.status(404).json({status: 'error'})
+                    this.res.status(404).json({ status: 'error' })
                 }
 
                 this.res.status(200).json(user)
             })
-            .catch(e => this.res.status(500).json({status: 'error', message: e.message}))
+            .catch(e => this.res.status(500).json({ status: 'error', message: e.message }))
     }
 
     public store = async (user: User) => {
         await this.userRepository
             .create(user)
-            .then(() => this.res.status(200).json({status: 'success'}))
-            .catch(e => this.res.status(500).json({status: 'error', message: e.message}))
+            .then(() => this.res.status(200).json({ status: 'success' }))
+            .catch(e => this.res.status(500).json({ status: 'error', message: e.message }))
     }
 
     public update = async (id: string, user: User) => {
@@ -43,12 +59,12 @@ export default class UserController {
             .update(id, user)
             .then((users: User[]) => {
                 if (!users) {
-                    this.res.status(404).json({status: 'error'})
+                    this.res.status(404).json({ status: 'error' })
                 }
 
-                this.res.status(200).json({status: 'success'})
+                this.res.status(200).json({ status: 'success' })
             })
-            .catch(e => this.res.status(500).json({status: 'error', message: e.message}))
+            .catch(e => this.res.status(500).json({ status: 'error', message: e.message }))
     }
 
     public destroy = async (id: string) => {
@@ -56,11 +72,11 @@ export default class UserController {
             .destroy(id)
             .then((users: User[]) => {
                 if (!users) {
-                    this.res.status(404).json({status: 'error'})
+                    this.res.status(404).json({ status: 'error' })
                 }
 
-                this.res.status(200).json({status: 'success'})
+                this.res.status(200).json({ status: 'success' })
             })
-            .catch(e => this.res.status(500).json({status: 'error', message: e.message}))
+            .catch(e => this.res.status(500).json({ status: 'error', message: e.message }))
     }
 }

@@ -1,6 +1,7 @@
-import type {NextApiRequest, NextApiResponse} from 'next'
+import type { NextApiRequest, NextApiResponse } from 'next'
 import fs from "fs"
 import path from "path"
+import html2canvas from 'html2canvas';
 
 //https://javascript.info/task/truncate
 export const truncate = (str: string, length: number) => {
@@ -9,7 +10,7 @@ export const truncate = (str: string, length: number) => {
 
 //https://stackoverflow.com/a/36441982
 export const base64ToFile = (data: string, fileName: string) => {
-    return fs.writeFile(getUploadPath(fileName), data.split(",")[1], {encoding: 'base64'}, err => console.log(err))
+    return fs.writeFile(getUploadPath(fileName), data.split(",")[1], { encoding: 'base64' }, err => console.log(err))
 }
 
 //https://gist.github.com/mathewbyrne/1280286
@@ -57,5 +58,58 @@ export const toBase64 = (file: any) => new Promise((resolve, reject) => {
     reader.onload = () => resolve(reader.result)
     reader.onerror = error => reject(error)
 })
+
+export const getColorByStatus = (status: string): string => {
+
+    switch (status.toLowerCase()) {
+        case 'created':
+            return 'info'
+        case 'sended':
+            return 'warning'
+        case 'recieved':
+            return 'success'
+        default:
+            return ''
+    }
+}
+
+export const formatDate = (isoDate: string | undefined): string => {
+    if (isoDate) {
+        const date = new Date(isoDate)
+        return leftpad(date.getDate(), 2)
+            + '.' + leftpad(date.getMonth() + 1, 2)
+            + '.' + date.getFullYear()
+            + ' ' + leftpad(date.getHours(), 2)
+            + ':' + leftpad(date.getMinutes(), 2)
+            + ':' + leftpad(date.getSeconds(), 2);
+    } else {
+        return '-'
+    }
+}
+
+const leftpad = (val: number, resultLength = 2, leftpadChar = '0'): string => {
+    return (String(leftpadChar).repeat(resultLength)
+        + String(val)).slice(String(val).length);
+}
+
+export const saveSticker = async (id: string) => {
+    let sticker = document.getElementById('sticker')
+
+    if (sticker) {
+
+        const canvas = await html2canvas(sticker)
+
+        canvas.toBlob(function (blob) {
+            let link = document.createElement('a');
+            link.download = `${id}.png`;
+
+            if (blob) {
+                link.href = URL.createObjectURL(blob);
+                link.click();
+                URL.revokeObjectURL(link.href);
+            }
+        }, 'image/png');
+    }
+}
 
 export const getUploadPath = (fileName: string): string => path.relative(process.cwd(), `public/upload/${fileName}`)
