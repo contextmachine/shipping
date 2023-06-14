@@ -1,26 +1,23 @@
 import { _Head } from "@/components";
 import { useRouter } from "next/router";
-import useSWR from 'swr'
-import { Shipping } from "../api/app/interfaces"
-import Image from 'next/image'
 import Link from 'next/link'
-import { formatDate, getColorByStatus, saveSticker } from "@/utils";
-import html2canvas from "html2canvas";
+import { saveSticker } from "@/utils";
 import ShippingCard from "@/components/ShippingCard";
-
+import GET_SHIPPING from '@/graphql/queries/getShipping.gql'
+import { useQuery } from "@apollo/client";
+import { parseShipping } from "@/graphql/parsers/parsers";
 
 
 
 export default function PostDetails() {
     const { query } = useRouter()
 
-    const { data: shipping } = useSWR<Shipping>(`/api/posts/${query.id}`, async (url: string) => {
-        return fetch(url).then(res => res.json())
-    })
+    const { data } = useQuery(GET_SHIPPING, { variables: { 'id': query.id } })
+    const shipping = parseShipping(data)
 
     if (shipping) {
         return <>
-            <_Head title={`Next.js Blog | ${shipping?.id}`} />
+            <_Head title={`Shipping | ${shipping.id}`} />
 
             <main className="container my-5" style={{ width: '400px' }}>
                 <div className="d-flex justify-content-end mb-5">
@@ -44,8 +41,10 @@ export default function PostDetails() {
         </>
     } else {
         return <> </>
-    }
 
+    }
 }
+
+
 
 

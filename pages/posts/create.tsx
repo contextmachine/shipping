@@ -2,19 +2,31 @@ import { FormEvent, useState, useLayoutEffect, useRef, useEffect } from "react"
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { Alert, AlertType, _Head } from "@/components";
-import QRCode from "qrcode"
-import useSWR from 'swr'
 import { uuid } from "uuidv4";
-import { User } from "../api/app/interfaces";
+import { User } from "../../interfaces";
+import { useMutation, useQuery } from "@apollo/client";
+import ADD_SHIPPING from '@/graphql/queries/addShipping.gql'
+import GET_PLACES from '@/graphql/queries/getPlaces.gql'
+import { eventListeners } from "@popperjs/core";
+import { base64ToFile } from "@/utils";
 
 export default function Create() {
     const router = useRouter()
-
+    const creationForm = useRef<HTMLFormElement>(null)
     const [alert, setAlert] = useState<AlertType>()
     const [loading, showLoading] = useState<boolean>(false)
     const contentType = useRef<HTMLInputElement>(null)
     const count = useRef<HTMLInputElement>(null)
     const targetLocation = useRef<HTMLSelectElement>(null)
+
+
+    const [addShipping] = useMutation(ADD_SHIPPING, {
+        onCompleted: () => {
+            creationForm.current?.reset()
+        }
+    })
+
+
 
     useEffect(() => {
         if (!localStorage.getItem('user')) {
@@ -26,65 +38,40 @@ export default function Create() {
         contentType.current?.focus()
     })
 
-    const { data: places } = useSWR<{ name: string, id: string }[]>(`/api/location`, async (url: string) => {
-        return fetch(url)
-            .then(res => res.json())
-    })
+    const data = useQuery(GET_PLACES).data
+    const places = parseLocations(data)
+
+    console.log(places)
 
     const handleOnSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         showLoading(true)
 
-        const opts: QRCode.QRCodeToDataURLOptions = {
-            errorCorrectionLevel: 'H',
-            margin: 2,
-        }
+
 
         const id = uuid()
-        const qrUrl = await QRCode.toDataURL(`/status/${id}`, opts)
         const user = (JSON.parse(localStorage.getItem('user') as string) as User)
 
-
-        const res = await fetch('/api/posts', {
-            method: 'post',
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Bearer " + localStorage.getItem('token') as string
-            },
-            body: JSON.stringify({
-                "id": id,
-                "contentType": contentType.current!.value,
-                "count": parseInt(count.current!.value),
-                "to": targetLocation.current!.value,
-                "from": user.id,
-                "qr": qrUrl,
-                "status": 'created',
-            })
+        const res = await addShipping({
+            variables: {
+                id: id,
+                from: user.id,
+                createdAt: new Date().toISOString(),
+                count: parseInt(count.current!.value),
+                to: targetLocation.current?.value,
+                content: contentType.current?.value,
+                qr: ''
+            }
         })
-        console.log(res)
 
 
-        if (res.status === 200) {
-            const form = e.target as HTMLFormElement
-            form.reset()
-
-
-            router.push(`/posts/${id}`)
-        }
-
-
-
+        router.push(`/posts/${id}`)
         showLoading(false)
-        setAlert({
-            display: true,
-            status: res.status,
-            concern: 'post',
-            action: 'create'
-        })
+
     }
 
     return <>
-        <_Head title="Create post" />
+        <_Head title="Create shipping" />
 
 
         <div className="container mt-5">
@@ -103,10 +90,10 @@ export default function Create() {
 
             <div className="card shadow-sm">
                 <div className="card-body">
-                    <form onSubmit={handleOnSubmit}>
+                    <form ref={creationForm} onSubmit={handleOnSubmit}>
 
                         <datalist id="targetPlaces">
-                            {places?.map((place, i) => (<option key={place.id} value={place.name} />))}
+                            {places?.map((place, i) => (<option key={place.id} value={place.location} />))}
                         </datalist>
 
                         <div className="mb-3">
@@ -121,7 +108,7 @@ export default function Create() {
                             <label htmlFor="targetLocation" className="form-label">Target Location</label>
                             <select id="targetLocation" name="targetLocation" className="form-control" required ref={targetLocation} defaultValue={'selectLocation'}>
                                 <option value={'selectLocation'} disabled={true}>Select location</option>
-                                {places?.map((place, i) => (<option key={place.id} value={place.id}>{place.name}</option>))}
+                                {places?.map((place, i) => (<option key={place.id} value={place.id}>{place.location}</option>))}
                             </select>
                         </div>
                         <button type="submit" className="btn btn-primary">
@@ -134,4 +121,17 @@ export default function Create() {
     </>
 }
 
+interface Location {
+    id: string,
+    location: string
+}
 
+const parseLocations = (res: any): Location[] => {
+    if (res)
+        return res
+            .mfb_shipping_users_aggregate
+            .nodes
+            .map((x: any) => ({ id: x.id, location: x.location }))
+    else
+        return []
+}

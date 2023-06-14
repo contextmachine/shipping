@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import fs from "fs"
 import path from "path"
 import html2canvas from 'html2canvas';
+import QRCode from "qrcode"
 
 //https://javascript.info/task/truncate
 export const truncate = (str: string, length: number) => {
@@ -113,3 +114,13 @@ export const saveSticker = async (id: string) => {
 }
 
 export const getUploadPath = (fileName: string): string => path.relative(process.cwd(), `public/upload/${fileName}`)
+
+
+export const makeQR = async (id: string) => {
+    const opts: QRCode.QRCodeToDataURLOptions = {
+        errorCorrectionLevel: 'H',
+        margin: 2,
+    }
+    const qrUrl = await QRCode.toDataURL(`/status/${id}`, opts)
+    return qrUrl
+}

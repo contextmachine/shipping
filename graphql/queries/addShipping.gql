@@ -1,0 +1,23 @@
+mutation AddShipping(
+    $id: uuid
+    $from: uuid, 
+    $createdAt: String, 
+    $count: Int, 
+    $to: uuid,
+    $content: String,
+    $qr: String) {
+  insert_mfb_shipping_shippings(
+    objects: {
+        id: $id,
+        content: $content
+        count: $count, 
+        from: $from, 
+        to: $to,
+        createdAt: $createdAt,
+        qr: $qr
+    }) {    
+    returning {
+        id
+    }
+  }
+}

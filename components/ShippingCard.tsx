@@ -1,7 +1,7 @@
 import { Shipping } from "@/pages/api/app/interfaces"
-import { formatDate } from "@/utils"
+import { formatDate, makeQR } from "@/utils"
 import Image from 'next/image'
-import useSWR from 'swr'
+import { useEffect, useState } from "react"
 
 export interface ShippingCardProps {
     showQr: boolean,
@@ -11,17 +11,17 @@ export interface ShippingCardProps {
 const ShippingCard = (props: ShippingCardProps) => {
 
     const { showQr, shipping } = props
+    const [qrUrl, setQrUrl] = useState('')
 
-    const { data: from } = useSWR<string>(`/api/location/${shipping?.from}`, async (url: string) => {
-        return fetch(url).then(res => res.json())
-    })
-    const { data: to } = useSWR<string>(`/api/location/${shipping?.to}`, async (url: string) => {
-        return fetch(url).then(res => res.json())
-    })
+    useEffect(() => {
+        if (shipping) {
+            makeQR(shipping.id).then(setQrUrl)
+        }
+    }, [shipping])
 
     return <>
         <article id='sticker' className="card mb-2 d-flex flex-column">
-            {showQr && <Image src={`/upload/${shipping?.qr}`} className="img-fluid" width="700" height="700" alt={shipping?.qr as string} />}
+            {showQr && <Image src={qrUrl} className="img-fluid" width="700" height="700" alt='qr-code' />}
 
             <div className="card-body d-flex flex-row justify-content-between mx-3">
                 <h2 className="card-text">{shipping?.contentType}</h2>
@@ -30,14 +30,14 @@ const ShippingCard = (props: ShippingCardProps) => {
             <div className="card-body d-flex flex-column justify-content-between">
 
                 <dl className="row">
-                    <dt className="col-sm-4 text-end">Created At:</dt>
-                    <dd className="col-sm-8">{formatDate(shipping.createdAt)}</dd>
-
                     <dt className="col-sm-4 text-end">From:</dt>
-                    <dd className="col-sm-8">{from}</dd>
+                    <dd className="col-sm-8">{shipping.from}</dd>
 
                     <dt className="col-sm-4 text-end">To:</dt>
-                    <dd className="col-sm-8">{to}</dd>
+                    <dd className="col-sm-8">{shipping.to}</dd>
+
+                    <dt className="col-sm-4 text-end">Created At:</dt>
+                    <dd className="col-sm-8">{formatDate(shipping.createdAt)}</dd>
                 </dl>
             </div>
             <p className="text-center">{shipping.id}</p>

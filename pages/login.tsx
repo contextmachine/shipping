@@ -17,8 +17,6 @@ const Login = () => {
         }
     })
 
-    
-
     useLayoutEffect(() => {
         email.current?.focus()
     })
@@ -42,7 +40,34 @@ const Login = () => {
             localStorage.setItem('user', JSON.stringify(data.user))
             localStorage.setItem('token', data.token)
 
-            
+
+        }
+
+        showAlert(true)
+        showLoading(false)
+    }
+
+
+    const handleOnSubmit2 = async (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
+        showLoading(true)
+
+        const res = await fetch('/api/auth', {
+            method: 'post',
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                "login": email.current!.value,
+                "password": password.current!.value
+            })
+        })
+
+        if (res.status === 200) {
+            const data = await res.json()
+
+            localStorage.setItem('user', JSON.stringify(data.user))
+            localStorage.setItem('token', data.token)
+
+
         }
 
         showAlert(true)
@@ -60,7 +85,7 @@ const Login = () => {
             </div>}
 
             <div className="card shadow p-4 mb-3">
-                <form onSubmit={handleOnSubmit}>
+                <form onSubmit={handleOnSubmit2}>
                     <div className="mb-3">
                         <label htmlFor="login" className="form-label">Login</label>
                         <input type="text" id="login" name="login" className="form-control" required ref={email} />

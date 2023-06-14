@@ -1,10 +1,11 @@
-import { Shipping, User } from "@/pages/api/app/interfaces"
 import { toBase64 } from "@/utils"
 import { useRouter } from "next/router"
 import { FormEvent, useState, useRef, ChangeEvent, useEffect } from "react"
 import useSWR from 'swr'
 import Link from "next/link";
 import { Alert, AlertType, _Head } from "@/components";
+import { User } from "@/interfaces/UserInterface";
+import { Shipping } from "@/interfaces/Shipping";
 
 export default function Edit() {
     const router = useRouter()
@@ -63,7 +64,7 @@ export default function Edit() {
     }
 
     return <>
-        <_Head title="Dashboard | Edit post" />
+        <_Head title="Edit shipping" />
 
         <div className="container mt-5">
             <div className="d-flex justify-content-between align-items-center mb-5">

@@ -1,0 +1,63 @@
+
+$createdColor : #7FDBDA;
+$sendedColor : #EDE682;
+$recievedColor : #ADE498;
+
+.status {
+  margin: 10px;
+}
+
+.buttonGroup {
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: row;
+}
+
+.buttonGroup label  {
+  margin: 5px;
+  line-height: 1.5px;
+}
+
+.buttonGroup span  {
+  text-align: center;
+  border-radius: 4px ;
+  padding: 6px 12px;
+  background-color: rgb(245, 245, 245)
+
+}
+
+.buttonGroup span:hover {
+  background-color: rgb(211, 211, 211) !important
+}
+
+.buttonGroup label input {
+  position: absolute;
+  display: none;
+  color: #fff !important;
+}
+
+
+
+.checkBoxButton[title=created] span:hover {  background-color: darken($createdColor, $amount: 20%) !important}
+.checkBoxButton[title=sended] span:hover {  background-color: darken($sendedColor, $amount: 20%) !important}
+.checkBoxButton[title=recieved] span:hover {  background-color: darken($recievedColor, $amount: 20%) !important}
+
+.checkBoxButton[title=created] input:checked + span{background-color: $createdColor;}
+.checkBoxButton[title=sended] input:checked + span{background-color: $sendedColor;}
+.checkBoxButton[title=recieved] input:checked + span{background-color: $recievedColor;}
+
+
+.updateStatusButton {
+  width: 100%;
+  border-width: 0;
+  text-align: center;
+  border-radius: 4px ;
+  padding: 6px 12px;
+}
+
+.updateStatusButton[title = send] {  
+  background-color: $sendedColor
+}
+.updateStatusButton[title = recieve] {  
+  background-color: $recievedColor
+}

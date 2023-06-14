@@ -8,6 +8,11 @@ const nextConfig = {
     },
     //https://stackoverflow.com/a/74139318
     webpack: (config, { isServer }) => {
+        config.module.rules.push({
+            test: /\.(graphql|gql)/,
+            exclude: /node_modules/,
+            loader: "graphql-tag/loader"
+          })
         if (!isServer) {
             config.resolve.fallback = {
                 fs: false,

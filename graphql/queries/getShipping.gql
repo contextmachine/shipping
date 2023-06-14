@@ -1,0 +1,20 @@
+query GetShipping($id: uuid = "") {
+  mfb_shipping_shippings_by_pk(id: $id) {
+    content
+    count
+    createdAt
+    id
+    qr
+    recievedAt
+    sendedAt
+    status
+    user_from {
+      id
+      location
+    }
+    user_to {
+      id
+      location
+    }
+  }
+}

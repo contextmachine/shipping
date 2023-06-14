@@ -1,0 +1,8 @@
+query GetPlaces {
+  mfb_shipping_users_aggregate(where: {login: {_neq: "admin"}}) {
+    nodes {
+      location
+      id
+    }
+  }
+}

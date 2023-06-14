@@ -1,12 +1,15 @@
 import { _Head } from "@/components"
 import ShippingCard from "@/components/ShippingCard"
-import { User } from "@/pages/api/app/interfaces"
-import { Shipping } from "@/pages/api/app/interfaces/Shipping"
+import Status from "@/components/Status"
+import { User } from "@/interfaces/UserInterface"
 import Link from "next/link"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
-import useSWR from 'swr'
-
+import { SEND, RECIEVE } from '@/graphql/queries/updateStatus'
+import GET_SHIPPING from '@/graphql/queries/getShipping.gql'
+import { useMutation, useQuery } from "@apollo/client"
+import { parseShipping } from "@/graphql/parsers/parsers"
+import styles from '@/pages/index.module.scss'
 
 
 export default function CurrentStatus() {
@@ -20,39 +23,36 @@ export default function CurrentStatus() {
             setUser(user)
         } else {
             router.push('/login')
-            setUser(null)
+            setUser(undefined)
         }
     }, [router])
 
-    const { data: shipping } = useSWR<Shipping>(`/api/posts/${router.query.id}`, async (url: string) => {
-        return fetch(url).then(res => res.json())
-    })
+    const { data } = useQuery(GET_SHIPPING, { variables: { 'id': router.query.id } })
+    const [send] = useMutation(SEND)
+    const [recieve] = useMutation(RECIEVE)
+
+    const shipping = parseShipping(data)
 
     const shippingUpdate = async () => {
         if (shipping && shipping.status !== 'recieved') {
 
-            const updateBody = (shipping: Shipping) => {
-                if (shipping.status === 'created') {
-                    return {
-                        'status': 'sended',
-                        'sendedAt': new Date().toISOString()
+            if (shipping.status === 'created') {
+                await send({
+                    variables: {
+                        id: shipping.id,
+                        sendedAt: new Date().toISOString(),
+                        status: 'sended'
                     }
-                } else if (shipping.status === 'sended') {
-                    return {
-                        'status': 'recieved',
-                        'recievedAt': new Date().toISOString()
+                })
+            } else if (shipping.status === 'sended') {
+                await recieve({
+                    variables: {
+                        id: shipping.id,
+                        recievedAt: new Date().toISOString(),
+                        status: 'recieved'
                     }
-                }
+                })
             }
-
-            const res = await fetch(`/api/posts/${shipping.id}`, {
-                method: 'put',
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + localStorage.getItem('token') as string
-                },
-                body: JSON.stringify(updateBody(shipping))
-            })
             router.reload()
         }
 
@@ -60,7 +60,7 @@ export default function CurrentStatus() {
 
     if (shipping) {
         return <>
-            <_Head title={`Next.js Blog | ${shipping?.id}`} />
+            <_Head title={`Shipping Status | ${shipping?.id}`} />
 
             <main className="container my-5" style={{ width: '400px' }}>
                 <div className="d-flex justify-content-end mb-5">
@@ -70,19 +70,17 @@ export default function CurrentStatus() {
                 </div>
                 <ShippingCard shipping={shipping} showQr={false} />
                 <div className="mb-3 d-flex justify-content-evenly" >
-                    <div className='status' title={shipping.status} >
-                        <p className='text-center mx-3 mb-0'>{shipping.status}</p>
-                    </div>
+                    <Status status={shipping.status} />
                 </div>
                 <div className="d-flex align-items-center">
                     {shipping.status === 'created'
-                        && user?.id === shipping.from
-                        && <button className="btn w-100" title='send' onClick={shippingUpdate}>
+                        && user?.id === shipping.fromId
+                        && <button className={styles.updateStatusButton} title='send' onClick={shippingUpdate}>
                             Send
                         </button>}
                     {shipping.status === 'sended'
-                        && user?.id === shipping.to
-                        && <button className="btn w-100" title='recieve' onClick={shippingUpdate}>
+                        && user?.id === shipping.toId
+                        && <button className={styles.updateStatusButton} title='recieve' onClick={shippingUpdate}>
                             Recieve
                         </button>}
                 </div>

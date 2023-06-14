@@ -1,5 +1,5 @@
 import type {NextApiRequest, NextApiResponse} from 'next'
-import {LoginController} from "./app/controllers"
+import {LoginController} from "../../notuse/controllers"
 import {middleware} from "utils";
 import {cors} from "@/pages/api/app/middlewares";
 

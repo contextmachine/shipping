@@ -1,7 +1,7 @@
-import ShippingRow from "@/components/ShippingRow";
+import ShippingItem from "@/components/ShippingItem";
 import { useRouter } from "next/router";
-import { Pagination } from "../pages/api/app/interfaces/PaginationInterface";
-import { Shipping } from "../pages/api/app/interfaces/Shipping";
+import { Pagination } from "../interfaces/PaginationInterface";
+import { Shipping } from "../interfaces/Shipping";
 
 
 export interface ShippingListProps {
@@ -24,7 +24,6 @@ export default function ShippingList(props: ShippingListProps) {
             <thead>
                 <tr>
                     <th scope="col">#</th>
-                    <th scope="col">QR</th>
                     <th scope="col">Status</th>
                     <th scope="col">Types</th>
                     <th scope="col">Count</th>
@@ -39,7 +38,7 @@ export default function ShippingList(props: ShippingListProps) {
 
             <tbody>
                 {data?.items?.map((post: Shipping, i: number) => (
-                    <ShippingRow key={i} index={i} shipping={post} setAlert={setAlert} admin={isAdmin} />
+                    <ShippingItem key={i} index={i} shipping={post} setAlert={setAlert} admin={isAdmin} />
                 ))}
             </tbody>
         </table>
