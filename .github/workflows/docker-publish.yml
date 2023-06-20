@@ -47,7 +47,7 @@ jobs:
           push: true
           tags: |
             ghcr.io/contextmachine/cxm-shipping:latest
-            ghcr.io/contextmachine/cxm-shipping:linux/amd64
+            ghcr.io/contextmachine/cxm-shipping:amd64
       
 
 
