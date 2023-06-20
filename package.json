@@ -11,7 +11,7 @@
     },
     "dependencies": {
         "@apollo/client": "^3.7.15",
-        "@apollo/server": "^4.7.3",
+        "@apollo/server": "^4.7.4",
         "@as-integrations/next": "^2.0.0",
         "@next/font": "13.1.6",
         "@nextui-org/react": "^1.0.0-beta.13",
