@@ -29,11 +29,17 @@ Pulling a current image, passing environment from file, and run container on htt
 docker run -p 0.0.0.0:3000:3000 --env-file .env.local --rm ghcr.io/contextmachine/cxm-shipping:latest
 ```
 ## Build image and run container with docker
-
+Build local image, create container and run it:
 ```
 DOCKER_BUILDKIT=1 docker build  -t shipping-test . && docker run -p 0.0.0.0:3000:3000 --env-file .env.local --rm shipping-test
 ```
+or:
+```bash
+# make script executable
+chmod +x build.sh 
+# run script
+./build.sh
 
-
+```
 
 
