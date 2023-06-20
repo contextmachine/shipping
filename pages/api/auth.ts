@@ -17,6 +17,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         mfb_shipping_users(where: {login: {_eq: $login}}) {
           id
           password
+          role
         }
       }
     `,

@@ -3,30 +3,26 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { Alert, AlertType, _Head } from "@/components";
 import { uuid } from "uuidv4";
-import { User } from "../../interfaces";
 import { useMutation, useQuery } from "@apollo/client";
 import ADD_SHIPPING from '@/graphql/queries/addShipping.gql'
 import GET_PLACES from '@/graphql/queries/getPlaces.gql'
-import { eventListeners } from "@popperjs/core";
-import { base64ToFile } from "@/utils";
+import GET_CONTENT_TYPES from '@/graphql/queries/getContentTypes.gql'
+import { User } from "@/interfaces/UserInterface";
 
 export default function Create() {
     const router = useRouter()
     const creationForm = useRef<HTMLFormElement>(null)
     const [alert, setAlert] = useState<AlertType>()
     const [loading, showLoading] = useState<boolean>(false)
-    const contentType = useRef<HTMLInputElement>(null)
+    const contentType = useRef<HTMLSelectElement>(null)
     const count = useRef<HTMLInputElement>(null)
     const targetLocation = useRef<HTMLSelectElement>(null)
-
 
     const [addShipping] = useMutation(ADD_SHIPPING, {
         onCompleted: () => {
             creationForm.current?.reset()
         }
     })
-
-
 
     useEffect(() => {
         if (!localStorage.getItem('user')) {
@@ -38,16 +34,12 @@ export default function Create() {
         contentType.current?.focus()
     })
 
-    const data = useQuery(GET_PLACES).data
-    const places = parseLocations(data)
-
-    console.log(places)
+    const places = parseLocations(useQuery(GET_PLACES).data)
+    const contentTypes = parseContentTypes(useQuery(GET_CONTENT_TYPES).data)
 
     const handleOnSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         showLoading(true)
-
-
 
         const id = uuid()
         const user = (JSON.parse(localStorage.getItem('user') as string) as User)
@@ -73,7 +65,6 @@ export default function Create() {
     return <>
         <_Head title="Create shipping" />
 
-
         <div className="container mt-5">
             <div className="d-flex justify-content-between align-items-center mb-5">
                 <h1>Create Shipping</h1>
@@ -92,13 +83,12 @@ export default function Create() {
                 <div className="card-body">
                     <form ref={creationForm} onSubmit={handleOnSubmit}>
 
-                        <datalist id="targetPlaces">
-                            {places?.map((place, i) => (<option key={place.id} value={place.location} />))}
-                        </datalist>
-
                         <div className="mb-3">
                             <label htmlFor="contentType" className="form-label">Content Type</label>
-                            <input type="text" id="contentType" name="contentType" className="form-control" required ref={contentType} />
+                            <select id="contentType" name="contentType" className="form-control" required ref={contentType} defaultValue={'selectContent'}>
+                                <option value={'selectContent'} disabled={true}>Select content</option>
+                                {contentTypes?.map((content, i) => (<option key={i} value={content}>{content}</option>))}
+                            </select>
                         </div>
                         <div className="mb-3">
                             <label htmlFor="count" className="form-label">Count</label>
@@ -132,6 +122,15 @@ const parseLocations = (res: any): Location[] => {
             .mfb_shipping_users_aggregate
             .nodes
             .map((x: any) => ({ id: x.id, location: x.location }))
+    else
+        return []
+}
+
+const parseContentTypes = (res: any): string[] => {
+    if (res)
+        return res
+            .mfb_shipping_content_types
+            .map((x: any) => x.name)
     else
         return []
 }

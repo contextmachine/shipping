@@ -1,11 +1,9 @@
 import { toBase64 } from "@/utils"
 import { useRouter } from "next/router"
 import { FormEvent, useState, useRef, ChangeEvent, useEffect } from "react"
-import useSWR from 'swr'
 import Link from "next/link";
 import { Alert, AlertType, _Head } from "@/components";
 import { User } from "@/interfaces/UserInterface";
-import { Shipping } from "@/interfaces/Shipping";
 
 export default function Edit() {
     const router = useRouter()
@@ -26,10 +24,6 @@ export default function Edit() {
         if (user.role !== 'admin') {
             router.push('/')
         }
-    })
-
-    const { data } = useSWR<Shipping>(`/api/posts/${router.query.id}`, async (url: string) => {
-        return fetch(url).then(res => res.json())
     })
 
     const handleOnChange = async (e: ChangeEvent<HTMLInputElement>) => {

@@ -1,4 +1,4 @@
-import { Shipping } from "@/pages/api/app/interfaces"
+import { Shipping } from "@/interfaces/Shipping"
 import { formatDate } from "@/utils"
 import Link from 'next/link'
 import { useRouter } from "next/router"
@@ -52,9 +52,9 @@ export default function ShippingItem(props: ShippingItemProps) {
             <td width="100">{shipping.count}</td>
             <td width="150">{shipping.from}</td>
             <td width="150">{shipping.to}</td>
-            <td width="120">{formatDate(shipping.createdAt)}</td>
-            <td width="120">{formatDate(shipping.sendedAt)}</td>
-            <td width="120">{formatDate(shipping.recievedAt)}</td>
+            <td width="110">{formatDate(shipping.createdAt)}</td>
+            <td width="110">{formatDate(shipping.sendedAt)}</td>
+            <td width="110">{formatDate(shipping.recievedAt)}</td>
             {admin &&
                 <td>
                     <div className="d-flex align-items-center">

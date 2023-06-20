@@ -1,7 +1,8 @@
-import { Shipping } from "@/pages/api/app/interfaces"
+import { Shipping } from "@/interfaces/Shipping"
 import { formatDate, makeQR } from "@/utils"
 import Image from 'next/image'
 import { useEffect, useState } from "react"
+import css from "./ShippingCard.module.scss"
 
 export interface ShippingCardProps {
     showQr: boolean,
@@ -20,16 +21,15 @@ const ShippingCard = (props: ShippingCardProps) => {
     }, [shipping])
 
     return <>
-        <article id='sticker' className="card mb-2 d-flex flex-column">
-            {showQr && <Image src={qrUrl} className="img-fluid" width="700" height="700" alt='qr-code' />}
+        <article id='sticker' style={{ width: '380px', height: '570px' }} className={`card mb-2 d-flex flex-column`}>
+            {showQr && <Image src={qrUrl} className="img-fluid" width="600" height="600" alt='qr-code' />}
 
-            <div className="card-body d-flex flex-row justify-content-between mx-3">
+            <div className="card-title my-1 d-flex flex-row justify-content-around">
                 <h2 className="card-text">{shipping?.contentType}</h2>
                 <h2 className="card-text">{shipping?.count + " pc."}</h2>
             </div>
-            <div className="card-body d-flex flex-column justify-content-between">
-
-                <dl className="row">
+            <div className="card-text d-flex flex-column justify-content-between">
+                <dl className="row mb-3">
                     <dt className="col-sm-4 text-end">From:</dt>
                     <dd className="col-sm-8">{shipping.from}</dd>
 
@@ -38,9 +38,9 @@ const ShippingCard = (props: ShippingCardProps) => {
 
                     <dt className="col-sm-4 text-end">Created At:</dt>
                     <dd className="col-sm-8">{formatDate(shipping.createdAt)}</dd>
+                    <p className="text-center mt-3">{shipping.id}</p>
                 </dl>
             </div>
-            <p className="text-center">{shipping.id}</p>
         </article>
     </>
 }

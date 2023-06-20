@@ -21,33 +21,6 @@ const Login = () => {
         email.current?.focus()
     })
 
-    const handleOnSubmit = async (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
-        showLoading(true)
-
-        const res = await fetch('/api/login', {
-            method: 'post',
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                "email": email.current!.value,
-                "password": password.current!.value
-            })
-        })
-
-        if (res.status === 200) {
-            const data = await res.json()
-
-            localStorage.setItem('user', JSON.stringify(data.user))
-            localStorage.setItem('token', data.token)
-
-
-        }
-
-        showAlert(true)
-        showLoading(false)
-    }
-
-
     const handleOnSubmit2 = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         showLoading(true)

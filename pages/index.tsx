@@ -50,12 +50,11 @@ export default function Home({ page, limit }: { page: number, limit: number }) {
     }, [statuses])
 
 
-    const { data: shippingsData, loading, error } = useQuery(GET_SHIPPINGS, { variables: { status: statusFilter } })
+    const { data: shippingsData } = useQuery(GET_SHIPPINGS, { variables: { status: statusFilter } })
     const shippings = parseShippings(shippingsData)
     const data = paginate(shippings as [], page, limit) as Pagination
 
     useEffect(() => {
-        setNotAuth(!localStorage.getItem('token') as boolean)
         const user = (JSON.parse(localStorage.getItem('user') as string) as User)
         setAdmin(user?.role === 'admin')
 

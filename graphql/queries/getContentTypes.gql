@@ -1,0 +1,5 @@
+query GetContentTypes {
+  mfb_shipping_content_types {
+    name
+  }
+}
