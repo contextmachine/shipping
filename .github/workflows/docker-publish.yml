@@ -37,7 +37,7 @@ jobs:
         name: Set up the environment
         run: |
             sed -i 's#FROM #FROM ${{ secrets.DOCKER_REPO }}/mirrors/#g' Dockerfile
-            echo ${{ vars.NEXT_PUBLIC_URL }} >> app/.env
+            echo ${{ vars.NEXT_PUBLIC_URL }} >> .env
       -
         name: Build and push
         uses: docker/build-push-action@v4
