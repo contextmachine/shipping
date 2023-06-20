@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shipping
+  labels:
+    app: shipping
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shipping
+  template:
+    metadata:
+      name: shipping
+      labels:
+        app: shipping
+    spec:
+      containers:
+        - name: shipping-container
+          env:
+            - name: NEXT_PUBLIC_URL
+              value: http://hasura.default.svc.cluster.local:8080/v1/graphql
+          image: ghcr.io/contextmachine/cxm-shipping:latest
+          imagePullPolicy: Always
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: shipping
+  labels:
+    app: shipping
+spec:
+  selector:
+    app: shipping
+  ports:
+    - name: http
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
+  type: ClusterIP
+
