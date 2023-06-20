@@ -1,10 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+    output: 'standalone',
     reactStrictMode: true,
     images: {
         dangerouslyAllowSVG: true,
         contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
-        domains: ['127.0.0.1'],
+        domains: ['*'],
     },
     //https://stackoverflow.com/a/74139318
     webpack: (config, { isServer }) => {
@@ -24,3 +25,4 @@ const nextConfig = {
 }
 
 module.exports = nextConfig
+/** @type {import('next').NextConfig} */
