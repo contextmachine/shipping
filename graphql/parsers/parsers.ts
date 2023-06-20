@@ -1,4 +1,4 @@
-import { Shipping } from "@/pages/api/app/interfaces"
+import { Shipping } from "@/interfaces/Shipping"
 
 export const parseShipping = (data: any): Shipping | undefined => {
     if (data) {

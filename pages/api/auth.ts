@@ -1,7 +1,6 @@
 import { gql } from "graphql-request";
 import { client } from "./client";
 import { generateJWT } from "./jwt";
-import { middleware } from "utils";
 import type { NextApiRequest, NextApiResponse } from 'next'
 import bcrypt from 'bcrypt'
 
@@ -24,7 +23,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     {
       login,
     }
-  );
+  ) as any;
 
   // Since we filtered on a non-primary key we got an array back
   user = user[0];
