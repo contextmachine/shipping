@@ -36,7 +36,7 @@ export default function Home({ page, limit }: { page: number, limit: number }) {
     const [statuses, setStatuses] = useState(initialStatuses)
     const [statusFilter, setStatusFilter] = useState<string[]>(initialStatuses.map(x => x.name))
 
-
+    console.log(statusFilter)
     const statusFilterHander = (pos: number) => {
         const updatedState = statuses.map((x, i) => {
             return i == pos ? { ...x, value: !x.value } : x

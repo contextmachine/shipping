@@ -1,5 +1,7 @@
 import { Shipping } from "@/interfaces/Shipping"
 import { formatDate, makeQR } from "@/utils"
+import { fontStyle } from "html2canvas/dist/types/css/property-descriptors/font-style"
+import { fontWeight } from "html2canvas/dist/types/css/property-descriptors/font-weight"
 import Image from 'next/image'
 import { useEffect, useState } from "react"
 import css from "./ShippingCard.module.scss"
@@ -21,25 +23,27 @@ const ShippingCard = (props: ShippingCardProps) => {
     }, [shipping])
 
     return <>
-        <article id='sticker' style={{ width: '380px', height: '570px' }} className={`card mb-2 d-flex flex-column`}>
+        <article id='sticker' style={{ width: '380px', height: `${showQr ? '570px' : 'auto'}` }} className={`card mb-2 d-flex flex-column`}>
             {showQr && <Image src={qrUrl} className="img-fluid" width="600" height="600" alt='qr-code' />}
+            <div className="card-text d-flex flex-column justify-content-around">
+                <div className="card-title d-flex flex-row justify-content-around">
+                    <h2 className="card-text">{shipping?.contentType}</h2>
+                    <h2 className="card-text">{shipping?.count + " pc."}</h2>
+                </div>
+                <div className="d-flex flex-row justify-content-between">
+                    <p className="text-end m-0" style={{ width: '100px', fontWeight: 'bold' }}>From:</p>
+                    <p className="m-0" style={{ width: '250px' }}>{shipping.from}</p>
+                </div>
+                <div className="d-flex flex-row justify-content-between">
+                    <p className="text-end m-0" style={{ width: '100px', fontWeight: 'bold' }}>To:</p>
+                    <p className="m-0" style={{ width: '250px' }}>{shipping.to}</p>
+                </div>
+                <div className="d-flex flex-row justify-content-between">
+                    <p className="text-end m-0" style={{ width: '100px', fontWeight: 'bold' }}>CreatedAt:</p>
+                    <p className="m-0" style={{ width: '250px' }}>{formatDate(shipping.createdAt)}</p>
+                </div>
+                <p className="text-center mt-3">{shipping.id}</p>
 
-            <div className="card-title my-1 d-flex flex-row justify-content-around">
-                <h2 className="card-text">{shipping?.contentType}</h2>
-                <h2 className="card-text">{shipping?.count + " pc."}</h2>
-            </div>
-            <div className="card-text d-flex flex-column justify-content-between">
-                <dl className="row mb-3">
-                    <dt className="col-sm-4 text-end">From:</dt>
-                    <dd className="col-sm-8">{shipping.from}</dd>
-
-                    <dt className="col-sm-4 text-end">To:</dt>
-                    <dd className="col-sm-8">{shipping.to}</dd>
-
-                    <dt className="col-sm-4 text-end">Created At:</dt>
-                    <dd className="col-sm-8">{formatDate(shipping.createdAt)}</dd>
-                    <p className="text-center mt-3">{shipping.id}</p>
-                </dl>
             </div>
         </article>
     </>

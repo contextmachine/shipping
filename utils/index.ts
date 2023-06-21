@@ -117,10 +117,11 @@ export const getUploadPath = (fileName: string): string => path.relative(process
 
 
 export const makeQR = async (id: string) => {
+    const domen = 'mf.contextmachine.online'
     const opts: QRCode.QRCodeToDataURLOptions = {
         errorCorrectionLevel: 'H',
         margin: 2,
     }
-    const qrUrl = await QRCode.toDataURL(`/status/${id}`, opts)
+    const qrUrl = await QRCode.toDataURL(`${domen}/posts/status/${id}`, opts)
     return qrUrl
 }
