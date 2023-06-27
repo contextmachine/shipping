@@ -6,8 +6,8 @@ import ShippingCard from "@/components/ShippingCard";
 import GET_SHIPPING from '@/graphql/queries/getShipping.gql'
 import { useQuery } from "@apollo/client";
 import { parseShipping } from "@/graphql/parsers/parsers";
-
-
+import Status from "@/components/Status";
+import { Header } from "@/components/Header";
 
 export default function PostDetails() {
     const { query } = useRouter()
@@ -19,23 +19,26 @@ export default function PostDetails() {
         return <>
             <_Head title={`Shipping | ${shipping.id}`} />
 
-            <main className="container my-5" style={{ width: '400px' }}>
-                <div className="d-flex justify-content-end mb-5">
+            <main className="container mt-3" >
+                <Header>
                     <Link href="/" className="btn btn-primary">
-                        Go back
+                        Список отправок
                     </Link>
-                </div>
-                <ShippingCard shipping={shipping} showQr={true} />
-                <div className="mb-3 d-flex justify-content-evenly" >
-                    <div className='status' title={shipping.status} >
-                        <p className='text-center mx-3 mb-0'>{shipping.status}</p>
+                </Header >
+                <div className="d-flex justify-content-center">
+                    <div className="d-flex flex-column align-itmes-center mb-5" style={{ maxWidth: '380px' }}>
+
+                        <ShippingCard shipping={shipping} showQr={true} />
+                        <div className="mb-3 d-flex justify-content-evenly" >
+                            <Status status={shipping.status}></Status>
+                        </div>
+                        <button type="submit" className="btn btn-primary w-100 mb-1" onClick={() => saveSticker(shipping.id)}>Сохранить</button>
+                        <div className="d-flex w-100 align-items-center">
+                            <Link href={`/posts/status/${shipping.id}`} className="btn btn-secondary w-100">
+                                Статус (dev)
+                            </Link>
+                        </div>
                     </div>
-                </div>
-                <button type="submit" className="btn btn-primary w-100 mb-1" onClick={() => saveSticker(shipping.id)}>Save</button>
-                <div className="d-flex align-items-center">
-                    <Link href={`/posts/status/${shipping.id}`} className="btn btn-secondary w-100">
-                        Status
-                    </Link>
                 </div>
             </main>
         </>

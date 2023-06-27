@@ -10,6 +10,7 @@ import GET_SHIPPING from '@/graphql/queries/getShipping.gql'
 import { useMutation, useQuery } from "@apollo/client"
 import { parseShipping } from "@/graphql/parsers/parsers"
 import styles from '@/pages/index.module.scss'
+import { Header } from "@/components/Header"
 
 
 export default function CurrentStatus() {
@@ -62,28 +63,33 @@ export default function CurrentStatus() {
         return <>
             <_Head title={`Shipping Status | ${shipping?.id}`} />
 
-            <main className="container my-5" style={{ width: '400px' }}>
-                <div className="d-flex justify-content-end mb-5">
-                    <Link href="/" className="btn btn-primary">
-                        Go back
+            <main className="container mt-3" >
+                <Header>
+                    <Link href="/" className="btn btn-sm btn-primary">
+                        Список отправок
                     </Link>
+                </Header >
+                <div className="d-flex justify-content-center">
+                    <div className="d-flex flex-column" style={{ width: '380px' }}>
+                        <ShippingCard shipping={shipping} showQr={false} />
+                        <div className="mb-3 d-flex justify-content-evenly" >
+                            <Status status={shipping.status} />
+                        </div>
+                        <div className="d-flex align-items-center">
+                            {shipping.status === 'created'
+                                && user?.id === shipping.fromId
+                                && <button className={styles.updateStatusButton} title='send' onClick={shippingUpdate}>
+                                    Send
+                                </button>}
+                            {shipping.status === 'sended'
+                                && user?.id === shipping.toId
+                                && <button className={styles.updateStatusButton} title='recieve' onClick={shippingUpdate}>
+                                    Recieve
+                                </button>}
+                        </div>
+                    </div>
                 </div>
-                <ShippingCard shipping={shipping} showQr={false} />
-                <div className="mb-3 d-flex justify-content-evenly" >
-                    <Status status={shipping.status} />
-                </div>
-                <div className="d-flex align-items-center">
-                    {shipping.status === 'created'
-                        && user?.id === shipping.fromId
-                        && <button className={styles.updateStatusButton} title='send' onClick={shippingUpdate}>
-                            Send
-                        </button>}
-                    {shipping.status === 'sended'
-                        && user?.id === shipping.toId
-                        && <button className={styles.updateStatusButton} title='recieve' onClick={shippingUpdate}>
-                            Recieve
-                        </button>}
-                </div>
+
             </main>
         </>
     } else {

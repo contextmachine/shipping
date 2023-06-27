@@ -1,17 +1,18 @@
-query GetShippings($status: [String!] = []) {
-  mfb_shipping_shippings(where: {status: {_in: $status}}) {
+query GetShippings {
+  mfb_shipping_shippings {
     content
     count
     createdAt
     id
-    qr
     recievedAt
     sendedAt
     status
     user_to {
+      id
       location
     }
     user_from {
+      id
       location
     }
   }

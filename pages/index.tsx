@@ -1,7 +1,7 @@
 import { _Head, AlertType } from "@/components"
 import { useRouter } from "next/router"
 import Link from "next/link"
-import { useEffect, useState } from "react"
+import { use, useEffect, useRef, useState } from "react"
 import ShippingList from "../components/ShippingList"
 import styles from "./index.module.scss"
 
@@ -11,91 +11,68 @@ import { paginate } from "@/utils"
 import { parseShippings } from "@/graphql/parsers/parsers"
 import { Pagination } from "../interfaces/PaginationInterface"
 import { User } from "../interfaces/UserInterface"
-
-const initialStatuses = [{
-    name: 'created',
-    value: true,
-    label: 'Created'
-},
-{
-    name: 'sended',
-    value: true,
-    label: 'Sended'
-},
-{
-    name: 'recieved',
-    value: false,
-    label: 'Recieved'
-}]
+import { Header } from "@/components/Header"
+import { Shipping } from "@/interfaces/Shipping"
+import { FilterFunction, filterList, filterMap } from "@/utils/filterUtils"
 
 export default function Home({ page, limit }: { page: number, limit: number }) {
     const router = useRouter()
-    const [notAuth, setNotAuth] = useState<boolean>(false)
-    const [alert, setAlert] = useState<AlertType>()
-    const [isAdmin, setAdmin] = useState<boolean>(false)
-    const [statuses, setStatuses] = useState(initialStatuses)
-    const [statusFilter, setStatusFilter] = useState<string[]>(initialStatuses.map(x => x.name))
 
-    console.log(statusFilter)
-    const statusFilterHander = (pos: number) => {
-        const updatedState = statuses.map((x, i) => {
-            return i == pos ? { ...x, value: !x.value } : x
-        })
-        setStatuses(updatedState)
-    }
+    const [user, setUser] = useState<User>()
+    const [isAdmin, setAdmin] = useState<boolean>(false)
+    const userFilterSelect = useRef<HTMLSelectElement>(null)
+    const [shippingList, setShippingList] = useState<Shipping[]>([])
+    const [currentFilter, setCurrentFilter] = useState('all')
+    const { data: shippingsData } = useQuery(GET_SHIPPINGS)
 
     useEffect(() => {
-        const list = statuses.filter(x => x.value).map(x => x.name)
-        setStatusFilter(list.length !== 0 ? list : initialStatuses.map(x => x.name))
-    }, [statuses])
+        if (user) {
+            const filter = filterMap.get(currentFilter)
+            if (filter) {
+                const shippings = parseShippings(shippingsData)
+                const filtered = shippings.filter(x => filter(x, user.id as string))
+                setShippingList(filtered)
+            }
+        }
+    }, [currentFilter, limit, page, shippingsData, user])
 
-
-    const { data: shippingsData } = useQuery(GET_SHIPPINGS, { variables: { status: statusFilter } })
-    const shippings = parseShippings(shippingsData)
-    const data = paginate(shippings as [], page, limit) as Pagination
+    const handleOnChange = () => {
+        if (userFilterSelect.current) {
+            setCurrentFilter(userFilterSelect.current.value)
+        }
+    }
 
     useEffect(() => {
         const user = (JSON.parse(localStorage.getItem('user') as string) as User)
         setAdmin(user?.role === 'admin')
+        setUser(user)
 
         if (!localStorage.getItem('user')) {
             router.push('/login')
         }
     }, [router])
 
+
     return <>
-        <_Head title="Shipping list" />
+        <_Head title="Список отправок" />
 
-        <main className="shippingList container my-5">
-            <div className="d-flex justify-content-between align-items-center mb-5">
-                <h1>Shippings</h1>
+        <main className="container mt-3">
+            <Header>
+                <Link href="/posts/create" className="btn text-w btn-sm btn-primary mx-3 flex-nowrap" >
+                    Создать отправку
+                </Link>
+                <Link href="/logout" className="btn btn-sm btn-danger align-middle">Выйти</Link>
+            </Header>
 
-                <div className="d-flex align-items-center">
-                    <Link href="/posts/create" className="btn btn-primary mx-3" >
-                        Create Shipping
-                    </Link>
-
-                    {notAuth && <Link href="/login" className="btn btn-primary">Log in</Link>}
-
-                    {!notAuth && <div className="d-flex align-items-center">
-                        <Link href="/logout" className="btn btn-danger">Log out</Link>
-                    </div>}
+            <div className="input-group mb-3">
+                <div className="input-group-prepend">
+                    <div className="input-group-text"><i className="bi bi-funnel-fill text-gray" /></div>
                 </div>
+                <select defaultValue="all" onChange={handleOnChange} ref={userFilterSelect} className="" style={{ width: '300px' }}>
+                    {filterList.map(x => (<option key={x.value} value={x.value}>{x.label}</option>))}
+                </select>
             </div>
-            <div className={styles.buttonGroup + ' mb-4'}>
-                <i className="bi bi-funnel-fill text-gray mx-3"></i>
-                {statuses.map((status, i) => (
-                    <div className={styles.checkBoxButton} title={status.name} key={i}>
-                        <label>
-                            <input type="checkbox" checked={status.value} onChange={() => statusFilterHander(i)} />
-                            <span className={styles.btn}>{status.label}</span>
-                        </label>
-                    </div>
-
-                ))}
-
-            </div>
-            <ShippingList data={data} isAdmin={isAdmin} setAlert={setAlert} limit={limit} />
+            <ShippingList userFilter={currentFilter} shippings={shippingList} user={user?.id ? user.id : ''} isAdmin={isAdmin} page={page} limit={limit} />
 
         </main>
     </>

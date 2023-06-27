@@ -2,7 +2,7 @@ export type UserRole = 'admin' | 'user'
 
 export type User = {
     id?: string,
-    name: string,
+    location: string,
     login: string,
     password?: string,
     role: UserRole,

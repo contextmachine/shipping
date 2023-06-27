@@ -41,42 +41,39 @@ const Login = () => {
             localStorage.setItem('token', data.token)
 
 
+        } else {
+            showAlert(true)
         }
 
-        showAlert(true)
         showLoading(false)
     }
 
     return <>
         <_Head title="Log in" />
 
-        <div className="container py-5" style={{ width: 450 }}>
-            <h1 className="pb-4 text-center">Log in</h1>
+        <div className="container py-5" style={{ maxWidth: 380 }}>
+            <h1 className="pb-4 text-center">Вход</h1>
 
             {alert && <div className="alert alert-danger">
-                Invalid login or password
+                Неправильное имя или пароль
             </div>}
 
             <div className="card shadow p-4 mb-3">
                 <form onSubmit={handleOnSubmit2}>
                     <div className="mb-3">
-                        <label htmlFor="login" className="form-label">Login</label>
+                        <label htmlFor="login" className="form-label">Логин</label>
                         <input type="text" id="login" name="login" className="form-control" required ref={email} />
                     </div>
 
                     <div className="mb-3">
-                        <label htmlFor="content" className="form-label">Password</label>
+                        <label htmlFor="content" className="form-label">Пароль</label>
                         <input type="password" id="password" name="password" className="form-control" required ref={password} />
                     </div>
 
                     <button type="submit" className="btn btn-primary">
-                        {loading && <div className="spinner-border spinner-border-sm me-1" role="status"></div>} Log in
+                        {loading && <div className="spinner-border spinner-border-sm me-1" role="status"></div>} Войти
                     </button>
                 </form>
-            </div>
-
-            <div className="d-flex justify-content-center">
-                <Link href="/">Go back home</Link>
             </div>
         </div>
     </>

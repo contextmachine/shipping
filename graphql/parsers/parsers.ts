@@ -1,4 +1,5 @@
 import { Shipping } from "@/interfaces/Shipping"
+import { Location } from "@/interfaces/Location"
 
 export const parseShipping = (data: any): Shipping | undefined => {
     if (data) {
@@ -9,7 +10,7 @@ export const parseShipping = (data: any): Shipping | undefined => {
             count: o.count,
             createdAt: o.createdAt,
             recievedAt: o.recievedAt,
-            sendedAt: o.sendetAt,
+            sendedAt: o.sendedAt,
             status: o.status,
             from: o.user_from.location,
             to: o.user_to.location,
@@ -28,15 +29,35 @@ export const parseShippings = (data: any): Shipping[] => {
             id: o.id,
             contentType: o.content,
             count: o.count,
-            qr: o.qr,
             createdAt: o.createdAt,
             recievedAt: o.recievedAt,
             sendedAt: o.sendedAt,
             status: o.status,
             from: o.user_from.location,
-            to: o.user_to.location
+            to: o.user_to.location,
+            fromId: o.user_from.id,
+            toId: o.user_to.id
         }))
     } else {
         return []
     }
+}
+
+export const parseLocations = (res: any): Location[] => {
+    if (res)
+        return res
+            .mfb_shipping_users_aggregate
+            .nodes
+            .map((x: any) => ({ id: x.id, location: x.location }))
+    else
+        return []
+}
+
+export const parseContentTypes = (res: any): string[] => {
+    if (res)
+        return res
+            .mfb_shipping_content_types
+            .map((x: any) => x.name)
+    else
+        return []
 }

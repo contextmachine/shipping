@@ -42,13 +42,13 @@ export default function ShippingItem(props: ShippingItemProps) {
 
     return <>
         <tr key={index} className="align-middle" >
-            <td width="40" scope="row">{index + 1}</td>
-            <td width="150">
+            <td width="40">{index + 1}</td>
+            <td width="90">
                 <Link href={`/posts/${shipping.id}`} className="btn" >
                     <Status status={shipping.status} />
                 </Link>
             </td>
-            <td width="100">{shipping.contentType}</td>
+            <td width="140">{shipping.contentType}</td>
             <td width="100">{shipping.count}</td>
             <td width="150">{shipping.from}</td>
             <td width="150">{shipping.to}</td>

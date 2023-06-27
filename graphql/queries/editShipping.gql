@@ -1,0 +1,27 @@
+mutation EditShipping(
+    $id: uuid!, 
+    $content: String, 
+    $count: Int, 
+    $createdAt: String, 
+    $from: uuid, 
+    $sendedAt: String, 
+    $recievedAt: String, 
+    $status: String, 
+    $to: uuid) {
+  update_mfb_shipping_shippings_by_pk(
+    pk_columns: {id: $id}, 
+    _set: {
+        content: $content, 
+        count: $count, 
+        createdAt: $createdAt, 
+        from: $from, 
+        recievedAt: $recievedAt, 
+        sendedAt: $sendedAt, 
+        status: $status, 
+        to: $to
+        })
+        {
+    id
+  }
+        
+}
