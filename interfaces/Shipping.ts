@@ -1,5 +1,6 @@
 export type Shipping = {
     id: string,
+    number: number,
     from: string,
     to: string,
     contentType: string,

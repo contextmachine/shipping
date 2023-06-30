@@ -14,7 +14,7 @@ export const filterList: { value: string, label: string, filter: FilterFunction 
     {
         value: 'sendedToMe',
         label: "Что едет ко мне",
-        filter: (shipping: Shipping, user: string) => shipping.toId === user && shipping.status === 'sended'
+        filter: (shipping: Shipping, user: string) => shipping.toId === user && (shipping.status === 'sended' || shipping.status === 'created')
     },
     {
         value: 'createdByMe',
@@ -25,6 +25,11 @@ export const filterList: { value: string, label: string, filter: FilterFunction 
         value: 'SendedByMe',
         label: "Что я отправил",
         filter: (shipping: Shipping, user: string) => shipping.fromId === user && shipping.status === 'sended'
+    },
+    {
+        value: 'DeliveredByMe',
+        label: "Что я доставил",
+        filter: (shipping: Shipping, user: string) => shipping.fromId === user && shipping.status === 'recieved'
     },
     {
         value: 'RecievedByMe',

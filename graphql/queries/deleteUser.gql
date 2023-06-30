@@ -1,0 +1,5 @@
+mutation DeleteUser($id: uuid!) {
+  delete_mfb_shipping_users_by_pk(id: $id) {
+    id
+  }
+}

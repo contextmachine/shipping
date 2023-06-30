@@ -3,17 +3,10 @@ import { FormEvent, useState, useRef, ChangeEvent, useEffect } from "react"
 import Link from "next/link";
 import { Alert, AlertType, _Head } from "@/components";
 import { User } from "@/interfaces/UserInterface";
-import EDIT_SHIPPING from '@/graphql/queries/editShipping.gql'
-import GET_PLACES from '@/graphql/queries/getPlaces.gql'
-import GET_CONTENT_TYPES from '@/graphql/queries/getContentTypes.gql'
-import GET_SHIPPING from '@/graphql/queries/getShipping.gql'
-import GET_SHIPPINGS from '@/graphql/queries/getShippings.gql'
 import { useMutation, useQuery } from "@apollo/client";
 import { parseContentTypes, parseLocations, parseShipping } from "@/graphql/parsers/parsers";
-import { uuid } from "uuidv4";
 import { statusList } from "@/components/Status";
-
-
+import { EDIT_SHIPPING, GET_SHIPPING, GET_PLACES, GET_SHIPPINGS, GET_CONTENT_TYPES } from "@/graphql/queries"
 
 
 interface DateState {
@@ -39,7 +32,7 @@ export default function Edit() {
         onCompleted: () => {
             editForm.current?.reset()
             if (shipping) {
-                router.push(`/posts/${shipping.id}`)
+                router.push(`/shippings/${shipping.id}`)
             }
         },
         refetchQueries: [GET_SHIPPING, GET_SHIPPINGS]

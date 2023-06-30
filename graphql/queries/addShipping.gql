@@ -4,8 +4,7 @@ mutation AddShipping(
     $createdAt: String, 
     $count: Int, 
     $to: uuid,
-    $content: String,
-    $qr: String) {
+    $content: String) {
   insert_mfb_shipping_shippings(
     objects: {
         id: $id,
@@ -14,7 +13,6 @@ mutation AddShipping(
         from: $from, 
         to: $to,
         createdAt: $createdAt,
-        qr: $qr
     }) {    
     returning {
         id

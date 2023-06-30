@@ -1,13 +1,20 @@
-import { useEffect, useRef, useState } from "react"
-import styles from "./ColumnFilter.module.css"
+import { useRef } from "react"
 import { TableFilter } from "./ShippingList"
+
+
+export interface Param {
+    value: string,
+    label: string
+}
+
 
 export interface ColumnFilterProps {
     field: string
-    params: string[],
+    params: Param[],
     columnFilter: TableFilter,
     setColumnFilter: (e: TableFilter) => void
 }
+
 
 export function ColumnFilter(props: ColumnFilterProps) {
 
@@ -19,18 +26,15 @@ export function ColumnFilter(props: ColumnFilterProps) {
     }
 
     return <>
-        <div
-            className="d-flex">
-            <i className="bi bi-sm bi-funnel-fill text-gray" />
+        <div className="mb-3">
             <select
-                className="d-inline-flex"
                 style={{ border: '0' }}
                 ref={filter}
                 value={columnFilter.field === field ? columnFilter.value : 'none'}
                 onChange={(e) => handleOnChange(e.target.value)}>
 
                 <option value='none'>нет</option>
-                {params.map((x, i) => (<option key={i}> {x} </option>))}
+                {params.map((x, i) => (<option key={i} value={x.value}> {x.label} </option>))}
             </select>
 
         </div>

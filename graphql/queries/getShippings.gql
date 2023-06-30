@@ -1,9 +1,10 @@
 query GetShippings {
   mfb_shipping_shippings {
+    id
+    number
     content
     count
     createdAt
-    id
     recievedAt
     sendedAt
     status

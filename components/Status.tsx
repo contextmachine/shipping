@@ -10,8 +10,10 @@ export const statusList = [{
 },
 {
     name: 'recieved',
-    label: 'Получен'
+    label: 'Доставлен'
 }]
+
+export const statusMap = new Map(statusList.map(x => ([x.name, x.label])))
 
 export default function Status(props: { status: string }) {
     return <>

@@ -4,9 +4,7 @@ import { useRouter } from "next/router";
 import { Alert, AlertType, _Head } from "@/components";
 import { uuid } from "uuidv4";
 import { useMutation, useQuery } from "@apollo/client";
-import ADD_SHIPPING from '@/graphql/queries/addShipping.gql'
-import GET_PLACES from '@/graphql/queries/getPlaces.gql'
-import GET_CONTENT_TYPES from '@/graphql/queries/getContentTypes.gql'
+import { GET_CONTENT_TYPES, ADD_SHIPPING, GET_PLACES, GET_SHIPPINGS } from "@/graphql/queries";
 import { User } from "@/interfaces/UserInterface";
 import { parseContentTypes, parseLocations } from "@/graphql/parsers/parsers";
 import { Header } from "@/components/Header";
@@ -23,7 +21,8 @@ export default function Create() {
     const [addShipping] = useMutation(ADD_SHIPPING, {
         onCompleted: () => {
             creationForm.current?.reset()
-        }
+        },
+        refetchQueries: [GET_SHIPPINGS]
     })
 
     useEffect(() => {
@@ -58,7 +57,7 @@ export default function Create() {
         })
 
 
-        router.push(`/posts/${id}`)
+        router.push(`/shippings/${id}`)
         showLoading(false)
 
     }
@@ -66,10 +65,10 @@ export default function Create() {
     return <>
         <_Head title="Create shipping" />
 
-        <div className="container mt-5">
+        <div className="container mt-3">
             <Header>
-                <div className="d-flex align-items-center">
-                    <Link href="/" className="btn btn-primary me-3">
+                <div className="d-flex flex-end">
+                    <Link href="/" className="btn btn-sm btn-primary">
                         Список отправок
                     </Link>
                 </div>
@@ -86,7 +85,7 @@ export default function Create() {
                         <div className="mb-3">
                             <label htmlFor="contentType" className="form-label">Контент</label>
                             <select id="contentType" name="contentType" className="form-control" required ref={contentType} defaultValue={'selectContent'}>
-                                <option value={'selectContent'} disabled={true}>Выберете контент</option>
+                                <option value={'selectContent'} disabled={true}>Выберите контент</option>
                                 {contentTypes?.map((content, i) => (<option key={i} value={content}>{content}</option>))}
                             </select>
                         </div>
@@ -97,7 +96,7 @@ export default function Create() {
                         <div className="mb-3">
                             <label htmlFor="targetLocation" className="form-label">Получатель</label>
                             <select id="targetLocation" name="targetLocation" className="form-control" required ref={targetLocation} defaultValue={'selectLocation'}>
-                                <option value={'selectLocation'} disabled={true}>Выберете получателя</option>
+                                <option value={'selectLocation'} disabled={true}>Выберите получателя</option>
                                 {places.map((place, i) => (<option key={place.id} value={place.id}>{place.location}</option>))}
                             </select>
                         </div>

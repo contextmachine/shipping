@@ -3,11 +3,11 @@ import { useRouter } from "next/router";
 import Link from 'next/link'
 import { saveSticker } from "@/utils";
 import ShippingCard from "@/components/ShippingCard";
-import GET_SHIPPING from '@/graphql/queries/getShipping.gql'
 import { useQuery } from "@apollo/client";
 import { parseShipping } from "@/graphql/parsers/parsers";
 import Status from "@/components/Status";
 import { Header } from "@/components/Header";
+import { GET_SHIPPING } from '@/graphql/queries'
 
 export default function PostDetails() {
     const { query } = useRouter()
@@ -21,7 +21,7 @@ export default function PostDetails() {
 
             <main className="container mt-3" >
                 <Header>
-                    <Link href="/" className="btn btn-primary">
+                    <Link href="/" className="btn btn-sm btn-primary">
                         Список отправок
                     </Link>
                 </Header >
@@ -34,7 +34,7 @@ export default function PostDetails() {
                         </div>
                         <button type="submit" className="btn btn-primary w-100 mb-1" onClick={() => saveSticker(shipping.id)}>Сохранить</button>
                         <div className="d-flex w-100 align-items-center">
-                            <Link href={`/posts/status/${shipping.id}`} className="btn btn-secondary w-100">
+                            <Link href={`/shippings/status/${shipping.id}`} className="btn btn-secondary w-100">
                                 Статус (dev)
                             </Link>
                         </div>

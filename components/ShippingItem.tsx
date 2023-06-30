@@ -1,9 +1,11 @@
 import { Shipping } from "@/interfaces/Shipping"
 import { formatDate } from "@/utils"
+import { useMutation } from "@apollo/client"
 import Link from 'next/link'
 import { useRouter } from "next/router"
 import { FormEvent } from "react"
 import Status from "./Status"
+import { GET_SHIPPINGS, DELETE_SHIPPING } from "@/graphql/queries"
 
 
 export interface ShippingItemProps {
@@ -18,33 +20,27 @@ export default function ShippingItem(props: ShippingItemProps) {
     const { shipping, index, setAlert, admin } = props
     const router = useRouter()
 
+    const [deleteShipping] = useMutation(DELETE_SHIPPING,
+        { refetchQueries: [GET_SHIPPINGS] }
+    )
+
     const handleOnDelete = async (e: FormEvent<HTMLFormElement>, id: string) => {
         e.preventDefault()
 
         if (!confirm("Are you sure you want to delete this post ?")) { return }
 
-        const res = await fetch(`/api/posts/${id}`, {
-            method: 'delete',
-            headers: { "Authorization": "Bearer " + localStorage.getItem('token') as string }
-        })
-
-        if (res.status === 200) {
-            return router.reload()
-        }
-
-        setAlert({
-            display: true,
-            status: res.status,
-            concern: 'post',
-            action: 'delete'
+        await deleteShipping({
+            variables: {
+                id: id
+            }
         })
     }
 
     return <>
         <tr key={index} className="align-middle" >
-            <td width="40">{index + 1}</td>
+            <td width="40">{shipping.number}</td>
             <td width="90">
-                <Link href={`/posts/${shipping.id}`} className="btn" >
+                <Link href={`/shippings/${shipping.id}`} className="btn" >
                     <Status status={shipping.status} />
                 </Link>
             </td>
@@ -58,7 +54,7 @@ export default function ShippingItem(props: ShippingItemProps) {
             {admin &&
                 <td>
                     <div className="d-flex align-items-center">
-                        <Link href={`/posts/edit/${shipping.id}`} className="mx-3" title="Edit">
+                        <Link href={`/shippings/edit/${shipping.id}`} className="mx-3" title="Edit">
                             <i className="bi bi-pencil-fill text-primary"></i>
                         </Link>
 

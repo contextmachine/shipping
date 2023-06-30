@@ -1,9 +1,10 @@
 query GetShipping($id: uuid!) {
   mfb_shipping_shippings_by_pk(id: $id) {
+    id
+    number
     content
     count
     createdAt
-    id
     recievedAt
     sendedAt
     status

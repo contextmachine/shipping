@@ -5,12 +5,10 @@ import { User } from "@/interfaces/UserInterface"
 import Link from "next/link"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
-import { SEND, RECIEVE } from '@/graphql/queries/updateStatus'
-import GET_SHIPPING from '@/graphql/queries/getShipping.gql'
 import { useMutation, useQuery } from "@apollo/client"
 import { parseShipping } from "@/graphql/parsers/parsers"
-import styles from '@/pages/index.module.scss'
 import { Header } from "@/components/Header"
+import { GET_SHIPPING, SEND, RECIEVE } from '@/graphql/queries'
 
 
 export default function CurrentStatus() {
@@ -78,13 +76,13 @@ export default function CurrentStatus() {
                         <div className="d-flex align-items-center">
                             {shipping.status === 'created'
                                 && user?.id === shipping.fromId
-                                && <button className={styles.updateStatusButton} title='send' onClick={shippingUpdate}>
-                                    Send
+                                && <button className='btn btn-primary w-100' onClick={shippingUpdate}>
+                                    Отправить
                                 </button>}
                             {shipping.status === 'sended'
                                 && user?.id === shipping.toId
-                                && <button className={styles.updateStatusButton} title='recieve' onClick={shippingUpdate}>
-                                    Recieve
+                                && <button className='btn btn-primary w-100' onClick={shippingUpdate}>
+                                    Получить
                                 </button>}
                         </div>
                     </div>

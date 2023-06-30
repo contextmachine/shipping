@@ -1,0 +1,5 @@
+mutation DeleteShipping($id: uuid!) {
+  delete_mfb_shipping_shippings_by_pk(id: $id) {
+    id
+  }
+}

@@ -1,0 +1,8 @@
+query GetUsers {
+  mfb_shipping_users {
+    id
+    location
+    login
+    role
+  }
+}

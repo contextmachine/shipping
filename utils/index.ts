@@ -122,6 +122,6 @@ export const makeQR = async (id: string) => {
         errorCorrectionLevel: 'H',
         margin: 2,
     }
-    const qrUrl = await QRCode.toDataURL(`${domen}/posts/status/${id}`, opts)
+    const qrUrl = await QRCode.toDataURL(`${domen}/shippings/status/${id}`, opts)
     return qrUrl
 }

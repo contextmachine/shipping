@@ -1,40 +1,44 @@
-import { _Head, AlertType } from "@/components"
+import { _Head } from "@/components"
 import { useRouter } from "next/router"
 import Link from "next/link"
-import { use, useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import ShippingList from "../components/ShippingList"
-import styles from "./index.module.scss"
-
-import GET_SHIPPINGS from '@/graphql/queries/getShippings.gql'
 import { useQuery } from "@apollo/client"
-import { paginate } from "@/utils"
 import { parseShippings } from "@/graphql/parsers/parsers"
-import { Pagination } from "../interfaces/PaginationInterface"
 import { User } from "../interfaces/UserInterface"
 import { Header } from "@/components/Header"
 import { Shipping } from "@/interfaces/Shipping"
-import { FilterFunction, filterList, filterMap } from "@/utils/filterUtils"
+import { filterList, filterMap } from "@/utils/filterUtils"
+import { GET_SHIPPINGS } from '@/graphql/queries'
 
 export default function Home({ page, limit }: { page: number, limit: number }) {
     const router = useRouter()
-
     const [user, setUser] = useState<User>()
     const [isAdmin, setAdmin] = useState<boolean>(false)
     const userFilterSelect = useRef<HTMLSelectElement>(null)
     const [shippingList, setShippingList] = useState<Shipping[]>([])
     const [currentFilter, setCurrentFilter] = useState('all')
+
     const { data: shippingsData } = useQuery(GET_SHIPPINGS)
 
     useEffect(() => {
         if (user) {
-            const filter = filterMap.get(currentFilter)
-            if (filter) {
+            const userFilter = filterMap.get(currentFilter)
+            if (userFilter) {
                 const shippings = parseShippings(shippingsData)
-                const filtered = shippings.filter(x => filter(x, user.id as string))
+
+                let filtered: Shipping[]
+                if (isAdmin) {
+                    filtered = shippings.filter(x => userFilter(x, user.id as string))
+                } else {
+                    filtered = shippings
+                        .filter(x => x.toId === user.id || x.fromId === user.id)
+                        .filter(x => userFilter(x, user.id as string))
+                }
                 setShippingList(filtered)
             }
         }
-    }, [currentFilter, limit, page, shippingsData, user])
+    }, [currentFilter, isAdmin, limit, page, shippingsData, user])
 
     const handleOnChange = () => {
         if (userFilterSelect.current) {
@@ -58,22 +62,29 @@ export default function Home({ page, limit }: { page: number, limit: number }) {
 
         <main className="container mt-3">
             <Header>
-                <Link href="/posts/create" className="btn text-w btn-sm btn-primary mx-3 flex-nowrap" >
+                <Link href="/shippings/create" className="btn text-w btn-sm btn-primary mx-1 flex-nowrap" >
                     Создать отправку
                 </Link>
-                <Link href="/logout" className="btn btn-sm btn-danger align-middle">Выйти</Link>
+                {isAdmin && <Link href="/users" className="btn text-w btn-sm btn-primary mx-1 flex-nowrap" >
+                    Пользователи
+                </Link>}
+                <Link href="/logout" className="btn btn-sm btn-danger mx-1 align-middle">Выйти</Link>
             </Header>
 
-            <div className="input-group mb-3">
-                <div className="input-group-prepend">
-                    <div className="input-group-text"><i className="bi bi-funnel-fill text-gray" /></div>
-                </div>
-                <select defaultValue="all" onChange={handleOnChange} ref={userFilterSelect} className="" style={{ width: '300px' }}>
-                    {filterList.map(x => (<option key={x.value} value={x.value}>{x.label}</option>))}
-                </select>
-            </div>
-            <ShippingList userFilter={currentFilter} shippings={shippingList} user={user?.id ? user.id : ''} isAdmin={isAdmin} page={page} limit={limit} />
+            <div className="d-flex flex-row justify-content-center">
+                <div className="d-inline-flex flex-column ">
 
+                    <div className="input-group mb-3">
+                        <div className="input-group-prepend">
+                            <div className="input-group-text"><i className="bi bi-funnel-fill text-gray" /></div>
+                        </div>
+                        <select defaultValue="all" onChange={handleOnChange} ref={userFilterSelect} className="" style={{ width: '300px' }}>
+                            {filterList.map(x => (<option key={x.value} value={x.value}>{x.label}</option>))}
+                        </select>
+                    </div>
+                    <ShippingList userFilter={currentFilter} shippings={shippingList} user={user?.id ? user.id : ''} isAdmin={isAdmin} page={page} limit={limit} />
+                </div>
+            </div>
         </main>
     </>
 }
