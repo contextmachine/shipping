@@ -19,6 +19,7 @@ WORKDIR /app
 
 COPY --from=builder --chown=root:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=root:nodejs /app/.next/static ./.next/static
+COPY --from=builder --chown=root:nodejs /app/.env ./.env
 
 EXPOSE 3000
 
