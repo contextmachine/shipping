@@ -37,6 +37,22 @@ export default function Create() {
 
     const places = parseLocations(useQuery(GET_PLACES).data)
     const contentTypes = parseContentTypes(useQuery(GET_CONTENT_TYPES).data)
+        .sort((a, b) => {
+
+            const aParts = a.split('-')
+            const bParts = b.split('-')
+
+            const alfabet = aParts[0].localeCompare(bParts[0])
+
+            if (alfabet) {
+                return alfabet
+            } else {
+                const aNum = aParts.length > 1 ? parseInt(aParts[aParts.length - 1]) : 0
+                const bNum = bParts.length > 1 ? parseInt(bParts[bParts.length - 1]) : 0
+                return aNum - bNum
+            }
+
+        })
 
     const handleOnSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
