@@ -29,17 +29,17 @@ const ShippingCard = (props: ShippingCardProps) => {
                 </div>
                 <div className="d-flex flex-row justify-content-between">
                     <p className="text-end m-0" style={{ width: '100px', fontWeight: 'bold' }}>Откуда:</p>
-                    <p className="m-0" style={{ width: '250px' }}>{shipping.from}</p>
+                    <p className="m-0" style={{ width: '250px', fontWeight: 'bold' }}>{shipping.from}</p>
                 </div>
                 <div className="d-flex flex-row justify-content-between">
                     <p className="text-end m-0" style={{ width: '100px', fontWeight: 'bold' }}>Куда:</p>
-                    <p className="m-0" style={{ width: '250px' }}>{shipping.to}</p>
+                    <p className="m-0" style={{ width: '250px', fontWeight: 'bold' }}>{shipping.to}</p>
                 </div>
                 <div className="d-flex flex-row justify-content-between">
                     <p className="text-end m-0" style={{ width: '100px', fontWeight: 'bold' }}>Создан:</p>
-                    <p className="m-0" style={{ width: '250px' }}>{formatDate(shipping.createdAt)}</p>
+                    <p className="m-0" style={{ width: '250px', fontWeight: 'bold' }}>{formatDate(shipping.createdAt)}</p>
                 </div>
-                <p className="text-center mt-3">{shipping.number}</p>
+                <p className="text-center mt-3" style={{ fontWeight: 'bold' }}> {shipping.number}</p>
 
             </div>
         </article>
