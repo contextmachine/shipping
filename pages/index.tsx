@@ -71,7 +71,7 @@ export default function Home({ page, limit }: { page: number, limit: number }) {
                 <Link href="/logout" className="btn btn-sm btn-danger mx-1 align-middle">Выйти</Link>
             </Header>
 
-            <div className="d-flex flex-row justify-content-center">
+            <div className="d-flex flex-row justify-content-start">
                 <div className="d-inline-flex flex-column ">
 
                     <div className="input-group mb-3">
