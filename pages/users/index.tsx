@@ -49,7 +49,7 @@ export default function Users() {
                     Список Отправок
                 </Link>
             </Header>
-            <div className="d-flex flex-row justify-content-center">
+            <div className="d-flex flex-row justify-content-start">
                 <div className="d-inline-flex ">
                     <table className="table table-striped table-sm text-center ">
                         <thead>
