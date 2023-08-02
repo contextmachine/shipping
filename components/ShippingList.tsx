@@ -15,7 +15,8 @@ export interface ShippingListProps {
     isAdmin: boolean,
     page: number,
     limit: number,
-    userFilter: string
+    userFilter: string,
+    loading: boolean
 }
 
 export interface TableFilter {
@@ -26,7 +27,7 @@ export interface TableFilter {
 
 export default function ShippingList(props: ShippingListProps) {
 
-    const { shippings, isAdmin, page, limit, userFilter } = props
+    const { shippings, isAdmin, page, limit, userFilter, loading } = props
     const router = useRouter()
     const [alert, setAlert] = useState<AlertType>()
     const [columnFilter, setColumnFilter] = useState<TableFilter>({ field: 'none', value: 'none' })
@@ -72,62 +73,63 @@ export default function ShippingList(props: ShippingListProps) {
     }, [columnFilter, limit, page, shippings])
 
     return <>
-        
 
-                <table className="table table-striped table-sm text-center">
-                    <thead>
-                        <tr className="justify-content-center">
-                            <th scope="col">ID</th>
-                            <th className="" scope="col">
-                                <ColumnFilter field={'status'} params={statusParams} columnFilter={columnFilter} setColumnFilter={setColumnFilter} />
-                                Статус
-                            </th>
-                            <th scope="col">
-                                <ColumnFilter field={'contentType'} params={contentParams} columnFilter={columnFilter} setColumnFilter={setColumnFilter} />
-                                Контент
-                            </th>
-                            <th scope="col">Кол-во</th>
-                            <th scope="col">
-                                <ColumnFilter field={'from'} params={fromParams} columnFilter={columnFilter} setColumnFilter={setColumnFilter} />
-                                Откуда
-                            </th>
-                            <th scope="col">
-                                <ColumnFilter field={'to'} params={toParams} columnFilter={columnFilter} setColumnFilter={setColumnFilter} />
-                                Куда
-                            </th>
-                            <th scope="col">Создан</th>
-                            <th scope="col">Отправлен</th>
-                            <th scope="col">Получен</th>
-                            {isAdmin && <th scope="col"></th>}
-                        </tr>
-                    </thead>
 
-                    <tbody>
-                        {shippingList?.items?.map((post: Shipping, i: number) => (
-                            <ShippingItem key={i} index={i} shipping={post} setAlert={setAlert} admin={isAdmin} />
-                        ))}
-                    </tbody>
-                </table>
+        <table className="table table-striped table-sm text-center">
+            <thead>
+                <tr className="justify-content-center">
+                    <th scope="col">ID</th>
+                    <th className="" scope="col">
+                        <ColumnFilter field={'status'} params={statusParams} columnFilter={columnFilter} setColumnFilter={setColumnFilter} />
+                        Статус
+                    </th>
+                    <th scope="col">
+                        <ColumnFilter field={'contentType'} params={contentParams} columnFilter={columnFilter} setColumnFilter={setColumnFilter} />
+                        Контент
+                    </th>
+                    <th scope="col">Кол-во</th>
+                    <th scope="col">
+                        <ColumnFilter field={'from'} params={fromParams} columnFilter={columnFilter} setColumnFilter={setColumnFilter} />
+                        Откуда
+                    </th>
+                    <th scope="col">
+                        <ColumnFilter field={'to'} params={toParams} columnFilter={columnFilter} setColumnFilter={setColumnFilter} />
+                        Куда
+                    </th>
+                    <th scope="col">Создан</th>
+                    <th scope="col">Отправлен</th>
+                    <th scope="col">Получен</th>
+                    {isAdmin && <th scope="col"></th>}
+                </tr>
+            </thead>
 
-                <nav className="my-5">
-                    <ul className="pagination justify-content-center">
-                        {shippingList?.page! > 1 && <li className="page-item">
-                            <button className="page-link text-primary" onClick={() => router.push(`?page=${shippingList?.page! - 1}&limit=${limit}`)}>
-                                <i className="bi bi-arrow-left"></i>
-                            </button>
-                        </li>}
+            <tbody>
+                {shippingList?.items?.map((post: Shipping, i: number) => (
+                    <ShippingItem key={i} index={i} shipping={post} setAlert={setAlert} admin={isAdmin} />
+                ))}
+            </tbody>
+        </table>
+        {loading && <div className="spinner-border" role="status"></div>}
 
-                        {shippingList?.totalPages! > 1 && <li className="page-item page-link text-primary">
-                            Page {shippingList?.page!}/{shippingList?.totalPages!}
-                        </li>}
+        <nav className="my-5">
+            <ul className="pagination justify-content-center">
+                {shippingList?.page! > 1 && <li className="page-item">
+                    <button className="page-link text-primary" onClick={() => router.push(`?page=${shippingList?.page! - 1}&limit=${limit}`)}>
+                        <i className="bi bi-arrow-left"></i>
+                    </button>
+                </li>}
 
-                        {shippingList?.page! < shippingList?.totalPages! && <li className="page-item">
-                            <button className="page-link text-primary" onClick={() => router.push(`?page=${shippingList?.page! + 1}&limit=${limit}`)}>
-                                <i className="bi bi-arrow-right"></i>
-                            </button>
-                        </li>}
-                    </ul>
-                </nav>
+                {shippingList?.totalPages! > 1 && <li className="page-item page-link text-primary">
+                    Page {shippingList?.page!}/{shippingList?.totalPages!}
+                </li>}
+
+                {shippingList?.page! < shippingList?.totalPages! && <li className="page-item">
+                    <button className="page-link text-primary" onClick={() => router.push(`?page=${shippingList?.page! + 1}&limit=${limit}`)}>
+                        <i className="bi bi-arrow-right"></i>
+                    </button>
+                </li>}
+            </ul>
+        </nav>
     </>
 }
 

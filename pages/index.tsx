@@ -19,7 +19,7 @@ export default function Home({ page, limit }: { page: number, limit: number }) {
     const [shippingList, setShippingList] = useState<Shipping[]>([])
     const [currentFilter, setCurrentFilter] = useState('all')
 
-    const { data: shippingsData } = useQuery(GET_SHIPPINGS)
+    const { data: shippingsData, loading: shippingListLoading } = useQuery(GET_SHIPPINGS)
 
     useEffect(() => {
         if (user) {
@@ -82,7 +82,7 @@ export default function Home({ page, limit }: { page: number, limit: number }) {
                             {filterList.map(x => (<option key={x.value} value={x.value}>{x.label}</option>))}
                         </select>
                     </div>
-                    <ShippingList userFilter={currentFilter} shippings={shippingList} user={user?.id ? user.id : ''} isAdmin={isAdmin} page={page} limit={limit} />
+                    <ShippingList loading={shippingListLoading} userFilter={currentFilter} shippings={shippingList} user={user?.id ? user.id : ''} isAdmin={isAdmin} page={page} limit={limit} />
                 </div>
             </div>
         </main>
