@@ -16,7 +16,8 @@ export interface ShippingListProps {
     page: number,
     limit: number,
     userFilter: string,
-    loading: boolean
+    loading: boolean,
+    searchId: number
 }
 
 export interface TableFilter {
@@ -27,7 +28,7 @@ export interface TableFilter {
 
 export default function ShippingList(props: ShippingListProps) {
 
-    const { shippings, isAdmin, page, limit, userFilter, loading } = props
+    const { shippings, isAdmin, page, limit, userFilter, loading, searchId } = props
     const router = useRouter()
     const [alert, setAlert] = useState<AlertType>()
     const [columnFilter, setColumnFilter] = useState<TableFilter>({ field: 'none', value: 'none' })
@@ -44,7 +45,7 @@ export default function ShippingList(props: ShippingListProps) {
 
     useEffect(() => {
         setColumnFilter({ field: 'none', value: 'none' })
-    }, [userFilter])
+    }, [userFilter, searchId])
 
     useEffect(() => {
         let filtered: Shipping[]

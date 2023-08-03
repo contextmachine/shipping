@@ -15,7 +15,9 @@ export default function Home({ page, limit }: { page: number, limit: number }) {
     const router = useRouter()
     const [user, setUser] = useState<User>()
     const [isAdmin, setAdmin] = useState<boolean>(false)
+    const [searchId, setSearchId] = useState<number>(NaN)
     const userFilterSelect = useRef<HTMLSelectElement>(null)
+    const searchField = useRef<HTMLInputElement>(null)
     const [shippingList, setShippingList] = useState<Shipping[]>([])
     const [currentFilter, setCurrentFilter] = useState('all')
 
@@ -36,15 +38,44 @@ export default function Home({ page, limit }: { page: number, limit: number }) {
                         .filter(x => userFilter(x, user.id as string))
                 }
                 setShippingList(filtered)
+            } else {
+                setShippingList(parseShippings(shippingsData))
             }
         }
-    }, [currentFilter, isAdmin, limit, page, shippingsData, user])
+    }, [currentFilter, isAdmin, limit, page, searchId, shippingsData, user])
 
-    const handleOnChange = () => {
+
+    useEffect(() => {
+        const shippings = parseShippings(shippingsData)
+
+        if (isNaN(searchId)) {
+            if (searchField && searchField.current) {
+                searchField.current.value = ''
+            }
+        } else {
+            const filtered = shippings.filter(shipping =>
+                shipping.number.toString().startsWith(searchId.toString())
+            )
+            setShippingList(filtered)
+        }
+    }, [searchId, shippingsData])
+
+    const handleOnChangeFilter = () => {
         if (userFilterSelect.current) {
             setCurrentFilter(userFilterSelect.current.value)
+            setSearchId(NaN)
         }
     }
+
+    const handleSearch = () => {
+        if (searchField.current) {
+            const value = parseInt(searchField.current.value)
+            setSearchId(value)
+            setCurrentFilter('all')
+        }
+    }
+
+
 
     useEffect(() => {
         const user = (JSON.parse(localStorage.getItem('user') as string) as User)
@@ -73,16 +104,33 @@ export default function Home({ page, limit }: { page: number, limit: number }) {
 
             <div className="d-flex flex-row justify-content-start">
                 <div className="d-inline-flex flex-column ">
+                    <div className="d-flex flex-row ">
 
-                    <div className="input-group mb-3">
-                        <div className="input-group-prepend">
-                            <div className="input-group-text"><i className="bi bi-funnel-fill text-gray" /></div>
+                        <div style={{ width: 220 }} >
+                            <div className="input-group w-100 " >
+                                <div className="input-group-text"><i className="bi bi-search text-gray" /></div>
+                                <input placeholder="ID" type='number' onChange={handleSearch} ref={searchField} className="form-control" />
+                            </div>
                         </div>
-                        <select defaultValue="all" onChange={handleOnChange} ref={userFilterSelect} className="" style={{ width: '300px' }}>
-                            {filterList.map(x => (<option key={x.value} value={x.value}>{x.label}</option>))}
-                        </select>
+                        <div style={{ width: 10 }} />
+                        <div style={{ width: 220 }}>
+                            <div className="input-group w-100">
+                                <div className="input-group-text"><i className="bi bi-funnel-fill text-gray" /></div>
+                                <select value={currentFilter} defaultValue="all" onChange={handleOnChangeFilter} ref={userFilterSelect} className="form-control">
+                                    {filterList.map(x => (<option key={x.value} value={x.value}>{x.label}</option>))}
+                                </select>
+                            </div>
+                        </div>
                     </div>
-                    <ShippingList loading={shippingListLoading} userFilter={currentFilter} shippings={shippingList} user={user?.id ? user.id : ''} isAdmin={isAdmin} page={page} limit={limit} />
+                    <ShippingList
+                        searchId={searchId}
+                        loading={shippingListLoading}
+                        userFilter={currentFilter}
+                        shippings={shippingList}
+                        user={user?.id ? user.id : ''}
+                        isAdmin={isAdmin}
+                        page={page}
+                        limit={limit} />
                 </div>
             </div>
         </main>
@@ -97,5 +145,4 @@ export async function getServerSideProps({ query: { page = 1, limit = 15 } }) {
         }
     }
 }
-
 
