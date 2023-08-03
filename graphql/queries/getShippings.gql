@@ -1,5 +1,5 @@
 query GetShippings {
-  mfb_shipping_shippings {
+  mfb_shipping_shippings(order_by: {number: desc}) {
     id
     number
     content
