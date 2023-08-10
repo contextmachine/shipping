@@ -17,8 +17,10 @@ interface Summary {
     recieved: number,
     created: number,
     sended: number,
-
 }
+
+type SummaryByType = Map<string, Summary>
+type SummaryByLocation = Map<string, SummaryByType>
 
 export default function LocationSummary() {
 
@@ -29,10 +31,38 @@ export default function LocationSummary() {
 
 
     const dateInRange = (dateString: string | undefined, range: DateRange) => {
-
         const date = dateString ? new Date(dateString) : undefined
         return date && date.valueOf() >= range[0].valueOf() && date.valueOf() <= range[1].valueOf()
+    }
 
+
+
+    const addShippingToSummary = (summaryByLocation: SummaryByLocation, shipping: Shipping, type: 'recieved' | 'created' | 'sended') => {
+
+        const location = type === 'created' || type === 'sended' ? shipping.from : shipping.to
+
+        if (!summaryByLocation.has(location)) {
+            summaryByLocation.set(location, new Map<string, Summary>())
+        }
+
+        const summaryByType = summaryByLocation.get(location) as SummaryByType
+
+        if (!summaryByType.has(shipping.contentType)) {
+            summaryByType.set(shipping.contentType, { recieved: 0, created: 0, sended: 0 })
+        }
+        const summary = summaryByType.get(shipping.contentType) as Summary
+
+        switch (type) {
+            case 'recieved':
+                summary.recieved = summary.recieved + shipping.count
+                break
+            case 'created':
+                summary.created = summary.created + shipping.count
+                break
+            case 'sended':
+                summary.sended = summary.sended + shipping.count
+                break
+        }
     }
 
 
@@ -40,61 +70,24 @@ export default function LocationSummary() {
         if (dateRange && data) {
             const shippingList = parseShippings(data)
 
-            const shippingsInRange = shippingList.filter(x => {
-                const createdIn = dateInRange(x.createdAt, dateRange)
-                const recievedIn = dateInRange(x.recievedAt, dateRange)
-                const sendedIn = dateInRange(x.sendedAt, dateRange)
+            const summary = new Map<string, Map<string, Summary>>()
 
-                return createdIn || recievedIn || sendedIn
+            shippingList.forEach(shipping => {
+                if (dateInRange(shipping.recievedAt, dateRange)) {
+                    console.log(shipping.to)
+                    addShippingToSummary(summary, shipping, 'recieved')
+                }
+                if (dateInRange(shipping.createdAt, dateRange)) {
+                    addShippingToSummary(summary, shipping, 'created')
+                }
+                if (dateInRange(shipping.sendedAt, dateRange)) {
+                    addShippingToSummary(summary, shipping, 'sended')
+                }
             })
 
-            const getters = (shipping: Shipping) => {
-                const getters = []
-                if (shipping.recievedAt) {
-                    getters.push((x: Shipping) => x.to)
-                }
-                if (shipping.createdAt) {
-                    getters.push((x: Shipping) => x.from)
-                }
-                if (shipping.sendedAt) {
-                    getters.push((x: Shipping) => x.from)
-                }
+            setSummary(summary)
 
-                return getters
-            }
 
-            const groupedByLocation = groupByMultipleKeys(shippingsInRange, x => getters(x))
-
-            const summaryMapByLocation = new Map(Array.from(groupedByLocation.entries()).map(([location, shippings]) => {
-
-                const groupedByContentType = groupByOneKey(shippings, x => x.contentType)
-
-                const summaryMapByType = new Map(Array.from(groupedByContentType).map(([contentType, shippings]) => {
-                    const recieved = shippings
-                        .filter(x => x.recievedAt)
-                        .map(x => x.count)
-                        .reduce((a, c) => {
-                            return a + c
-                        })
-                    const created = shippings
-                        .filter(x => x.createdAt)
-                        .map(x => x.count)
-                        .reduce((a, c) => {
-                            return a + c
-                        })
-                    const sended = shippings
-                        .filter(x => x.sendedAt)
-                        .map(x => x.count)
-                        .reduce((a, c) => {
-                            return a + c
-                        })
-                    return [contentType, { recieved, created, sended }]
-                }))
-
-                return [location, summaryMapByType]
-            }))
-
-            setSummary(summaryMapByLocation)
         }
     }, [dateRange])
 
@@ -141,16 +134,18 @@ export default function LocationSummary() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {Array.from(types.entries()).map(([type, summary]) => {
-                                        return <>
-                                            <tr key={type} className="align-middle" >
-                                                <td width="40">{type}</td>
-                                                <td width="110">{summary.recieved}</td>
-                                                <td width="110">{summary.created}</td>
-                                                <td width="110">{summary.sended}</td>
-                                            </tr>
-                                        </>
-                                    })}
+                                    {Array.from(types.entries())
+                                        .sort((a, b) => a[0].localeCompare(b[0]))
+                                        .map(([type, summary]) => {
+                                            return <>
+                                                <tr key={type} className="align-middle" >
+                                                    <td width="40">{type}</td>
+                                                    <td width="110">{summary.recieved}</td>
+                                                    <td width="110">{summary.created}</td>
+                                                    <td width="110">{summary.sended}</td>
+                                                </tr>
+                                            </>
+                                        })}
                                 </tbody>
                             </table>
                         </div>)
