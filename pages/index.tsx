@@ -11,7 +11,7 @@ import { Shipping } from "@/interfaces/Shipping"
 import { filterList, filterMap } from "@/utils/filterUtils"
 import { GET_SHIPPINGS } from '@/graphql/queries'
 
-export default function Home({ page, limit }: { page: number, limit: number }) {
+export default function Home({ page, limit }: { page: string, limit: string }) {
     const router = useRouter()
     const [user, setUser] = useState<User>()
     const [isAdmin, setAdmin] = useState<boolean>(false)
@@ -42,7 +42,7 @@ export default function Home({ page, limit }: { page: number, limit: number }) {
                 setShippingList(parseShippings(shippingsData))
             }
         }
-    }, [currentFilter, isAdmin, limit, page, searchId, shippingsData, user])
+    }, [currentFilter, isAdmin, searchId, shippingsData, user])
 
 
     useEffect(() => {
@@ -74,8 +74,6 @@ export default function Home({ page, limit }: { page: number, limit: number }) {
             setCurrentFilter('all')
         }
     }
-
-
 
     useEffect(() => {
         const user = (JSON.parse(localStorage.getItem('user') as string) as User)
@@ -132,8 +130,8 @@ export default function Home({ page, limit }: { page: number, limit: number }) {
                         shippings={shippingList}
                         user={user?.id ? user.id : ''}
                         isAdmin={isAdmin}
-                        page={page}
-                        limit={limit} />
+                        page={parseInt(page)}
+                        limit={parseInt(limit)} />
                 </div>
             </div>
         </main>
