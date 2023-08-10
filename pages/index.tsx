@@ -12,6 +12,8 @@ import { filterList, filterMap } from "@/utils/filterUtils"
 import { GET_SHIPPINGS } from '@/graphql/queries'
 
 export default function Home({ page, limit }: { page: string, limit: string }) {
+
+
     const router = useRouter()
     const [user, setUser] = useState<User>()
     const [isAdmin, setAdmin] = useState<boolean>(false)
@@ -138,7 +140,8 @@ export default function Home({ page, limit }: { page: string, limit: string }) {
     </>
 }
 
-export async function getServerSideProps({ query: { page = 1, limit = 15 } }) {
+export async function getServerSideProps({ query: { page = 1, limit = 50 } }) {
+
     return {
         props: {
             page: page,

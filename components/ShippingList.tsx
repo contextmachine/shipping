@@ -70,8 +70,6 @@ export default function ShippingList(props: ShippingListProps) {
             }
         }
 
-        console.log('from comp', typeof (page), typeof (limit))
-
         setShippingList(paginate(filtered as [], page, limit) as Pagination)
     }, [columnFilter, limit, page, shippings])
 
@@ -119,7 +117,6 @@ export default function ShippingList(props: ShippingListProps) {
                     <ul className="pagination justify-content-center">
                         {page > 1 && <li className="page-item">
                             <button className="page-link text-primary" onClick={() => {
-                                console.log(`?page=${page - 1}&limit=${limit}`)
                                 router.push(`?page=${page - 1}&limit=${limit}`)
                             }}>
                                 <i className="bi bi-arrow-left"></i>
@@ -132,7 +129,6 @@ export default function ShippingList(props: ShippingListProps) {
 
                         {page < shippingList.totalPages && <li className="page-item">
                             <button className="page-link text-primary" onClick={() => {
-                                console.log(`?page=${page + 1}&limit=${limit}`)
                                 router.push(`?page=${page + 1}&limit=${limit}`)
                             }}>
                                 <i className="bi bi-arrow-right"></i>

@@ -74,7 +74,6 @@ export default function LocationSummary() {
 
             shippingList.forEach(shipping => {
                 if (dateInRange(shipping.recievedAt, dateRange)) {
-                    console.log(shipping.to)
                     addShippingToSummary(summary, shipping, 'recieved')
                 }
                 if (dateInRange(shipping.createdAt, dateRange)) {
