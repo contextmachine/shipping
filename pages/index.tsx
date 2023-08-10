@@ -99,6 +99,9 @@ export default function Home({ page, limit }: { page: number, limit: number }) {
                 {isAdmin && <Link href="/users" className="btn text-w btn-sm btn-primary mx-1 flex-nowrap" >
                     Пользователи
                 </Link>}
+                {isAdmin && <Link href="/location-summary" className="btn text-w btn-sm btn-primary mx-1 flex-nowrap" >
+                    Сводка
+                </Link>}
                 <Link href="/logout" className="btn btn-sm btn-danger mx-1 align-middle">Выйти</Link>
             </Header>
 

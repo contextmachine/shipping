@@ -125,3 +125,34 @@ export const makeQR = async (id: string) => {
     const qrUrl = await QRCode.toDataURL(`${domen}/shippings/status/${id}`, opts)
     return qrUrl
 }
+
+
+export const groupByOneKey = <T, U>(list: T[], keyGetter: (value: T) => U): Map<U, T[]> => {
+    const grouped = new Map<U, T[]>()
+    for (const item of list) {
+        const key = keyGetter(item)
+        const rec = grouped.get(key)
+        if (rec) {
+            rec.push(item)
+        } else {
+            grouped.set(key, [item])
+        }
+    }
+    return grouped
+}
+
+export const groupByMultipleKeys = <T, U>(list: T[], keyGetters: (value: T) => ((value: T) => U)[]): Map<U, T[]> => {
+    const grouped = new Map<U, T[]>()
+    for (const item of list) {
+        keyGetters(item).forEach(getter => {
+            const key = getter(item)
+            const rec = grouped.get(key)
+            if (rec) {
+                rec.push(item)
+            } else {
+                grouped.set(key, [item])
+            }
+        })
+    }
+    return grouped
+}
