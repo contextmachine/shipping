@@ -13,11 +13,21 @@ import { parseShippings } from "@/graphql/parsers/parsers";
 
 type DateRange = [Date, Date]
 
-interface Summary {
-    recieved: number,
-    created: number,
-    sended: number,
+interface SummaryData {
+    count: number,
+    shippings: Shipping[]
 }
+
+type SummaryByDestination = Map<string, SummaryData>
+
+
+interface Summary {
+    recieved: SummaryByDestination,
+    created: SummaryByDestination,
+    sended: SummaryByDestination,
+}
+
+
 
 type SummaryByType = Map<string, Summary>
 type SummaryByLocation = Map<string, SummaryByType>
@@ -39,7 +49,16 @@ export default function LocationSummary() {
 
     const addShippingToSummary = (summaryByLocation: SummaryByLocation, shipping: Shipping, type: 'recieved' | 'created' | 'sended') => {
 
-        const location = type === 'created' || type === 'sended' ? shipping.from : shipping.to
+        let location: string
+        let destination: string
+
+        if (type === 'created' || type === 'sended') {
+            location = shipping.from
+            destination = shipping.to
+        } else {
+            location = shipping.to
+            destination = shipping.from
+        }
 
         if (!summaryByLocation.has(location)) {
             summaryByLocation.set(location, new Map<string, Summary>())
@@ -48,21 +67,45 @@ export default function LocationSummary() {
         const summaryByType = summaryByLocation.get(location) as SummaryByType
 
         if (!summaryByType.has(shipping.contentType)) {
-            summaryByType.set(shipping.contentType, { recieved: 0, created: 0, sended: 0 })
+            summaryByType.set(shipping.contentType, {
+                recieved: new Map<string, SummaryData>(),
+                created: new Map<string, SummaryData>(),
+                sended: new Map<string, SummaryData>()
+            })
         }
         const summary = summaryByType.get(shipping.contentType) as Summary
 
-        switch (type) {
-            case 'recieved':
-                summary.recieved = summary.recieved + shipping.count
-                break
-            case 'created':
-                summary.created = summary.created + shipping.count
-                break
-            case 'sended':
-                summary.sended = summary.sended + shipping.count
-                break
+        if (!summary[type].has(destination)) {
+            summary[type].set(destination, { count: 0, shippings: [] })
         }
+
+        const summaryByDestination = summary[type].get(destination) as SummaryData
+
+        summaryByDestination.count = summaryByDestination.count + shipping.count
+        summaryByDestination.shippings.push(shipping)
+
+    }
+
+
+    const getSummary = (summary: Summary, type: keyof Summary) => {
+
+        const formatDestination = (x: string) => {
+            const parts = x.split(' — ')
+            return parts[parts.length - 1]
+        }
+
+        const buildString = (type: keyof Summary, destination: string, count: number) => {
+            return type === 'recieved'
+                ? `${formatDestination(destination)} → ${count}`
+                : `${count} → ${formatDestination(destination)}`
+        }
+
+        const result = Array.from(summary[type].entries())
+            .map(([destination, x]) => buildString(type, destination, x.count))
+            .map((x, i) => <div key={i}>{x}</div>)
+
+
+        return result.length > 0 ? result : 0
     }
 
 
@@ -139,9 +182,9 @@ export default function LocationSummary() {
                                             return <>
                                                 <tr key={type} className="align-middle" >
                                                     <td width="40">{type}</td>
-                                                    <td width="110">{summary.recieved}</td>
-                                                    <td width="110">{summary.created}</td>
-                                                    <td width="110">{summary.sended}</td>
+                                                    <td width="110">{getSummary(summary, 'recieved')}</td>
+                                                    <td width="110">{getSummary(summary, 'created')}</td>
+                                                    <td width="110">{getSummary(summary, 'sended')}</td>
                                                 </tr>
                                             </>
                                         })}
