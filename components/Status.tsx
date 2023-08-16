@@ -2,18 +2,22 @@ import styles from "./Status.module.scss"
 
 export const statusList = [{
     name: 'created',
-    label: 'Создан'
+    label: 'Создан',
+    color: '#7FDBDA',
 },
 {
     name: 'sended',
-    label: 'Отправлен'
+    label: 'Отправлен',
+    color: '#EDE682',
 },
 {
     name: 'recieved',
-    label: 'Доставлен'
+    label: 'Доставлен',
+    color: '#ADE498'
 }]
 
 export const statusMap = new Map(statusList.map(x => ([x.name, x.label])))
+export const statusColorMap = new Map(statusList.map(x => ([x.name, x.color])))
 
 export default function Status(props: { status: string }) {
     return <>

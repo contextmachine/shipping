@@ -1,15 +1,16 @@
 import { _Head } from "@/components"
 import { Header } from "@/components/Header"
-import Link from "next/link"
 import { DateRangePicker } from 'rsuite'
-
 import { useEffect, useState } from 'react';
-import 'rsuite/dist/rsuite-no-reset.min.css';
 import { useQuery } from "@apollo/client";
 import { GET_SHIPPINGS } from "@/graphql/queries";
 import { Shipping } from "@/interfaces/Shipping";
-import { groupByMultipleKeys, groupByOneKey } from "@/utils";
 import { parseShippings } from "@/graphql/parsers/parsers";
+import Link from "next/link"
+
+import 'rsuite/dist/rsuite-no-reset.min.css';
+import { statusColorMap, statusMap } from "@/components/Status";
+import { formatDate } from "@/utils";
 
 type DateRange = [Date, Date]
 
@@ -26,6 +27,8 @@ interface Summary {
     created: SummaryByDestination,
     sended: SummaryByDestination,
 }
+
+
 
 
 
@@ -47,12 +50,12 @@ export default function LocationSummary() {
 
 
 
-    const addShippingToSummary = (summaryByLocation: SummaryByLocation, shipping: Shipping, type: 'recieved' | 'created' | 'sended') => {
+    const addShippingToSummary = (summaryByLocation: SummaryByLocation, shipping: Shipping, status: 'recieved' | 'created' | 'sended') => {
 
         let location: string
         let destination: string
 
-        if (type === 'created' || type === 'sended') {
+        if (status === 'created' || status === 'sended') {
             location = shipping.from
             destination = shipping.to
         } else {
@@ -75,11 +78,11 @@ export default function LocationSummary() {
         }
         const summary = summaryByType.get(shipping.contentType) as Summary
 
-        if (!summary[type].has(destination)) {
-            summary[type].set(destination, { count: 0, shippings: [] })
+        if (!summary[status].has(destination)) {
+            summary[status].set(destination, { count: 0, shippings: [] })
         }
 
-        const summaryByDestination = summary[type].get(destination) as SummaryData
+        const summaryByDestination = summary[status].get(destination) as SummaryData
 
         summaryByDestination.count = summaryByDestination.count + shipping.count
         summaryByDestination.shippings.push(shipping)
@@ -94,18 +97,74 @@ export default function LocationSummary() {
             return parts[parts.length - 1]
         }
 
-        const buildString = (type: keyof Summary, destination: string, count: number) => {
-            return type === 'recieved'
-                ? `${formatDestination(destination)} → ${count}`
-                : `${count} → ${formatDestination(destination)}`
+        const statusTime = (shipping: Shipping) => {
+            switch (shipping.status) {
+                case 'created':
+                    return formatDate(shipping.createdAt)
+                case 'sended':
+                    return formatDate(shipping.sendedAt)
+                case 'recieved':
+                    return formatDate(shipping.recievedAt)
+                default:
+                    return '-'
+            }
+        }
+
+        const generateToolTip = (shipping: Shipping) => {
+            const from = formatDestination(shipping.from)
+            const to = formatDestination(shipping.to)
+            const tooltip = [
+                `${from} → ${to}`,
+                `${shipping.contentType}    ${shipping.count} шт.`,
+                `${statusMap.get(shipping.status)} ${statusTime(shipping)}`
+            ].join('\n')
+            return tooltip
+        }
+
+        const buildData = (destination: string, summary: SummaryData) => {
+
+            const elements = [
+                <div key='count'>{summary.count}</div>,
+                <div key='arrow' className="align-self-center mx-1" style={{ color: 'gray', fontSize: 12 }}>→</div>,
+                <div key='dest' className="align-self-center" style={{ color: 'gray', fontSize: 12 }}>{formatDestination(destination)}</div>,
+            ]
+
+            if (type === 'recieved') elements.reverse()
+
+            const x =
+                <div>
+                    <div className="d-flex flex-row align-middle justify-content-center">
+                        {elements}
+                    </div>
+                    <div className="d-flex flex-row flex-wrap align-middle justify-content-center">
+                        {summary.shippings
+                            .sort((a, b) => a.number - b.number)
+                            .map((shipping, i) =>
+                                <span key={i} className="d-flex mx-1 justify-content-center" style={{
+                                    backgroundColor: statusColorMap.get(shipping.status),
+                                    height: 15,
+                                    borderRadius: 6,
+                                    width: 20
+                                }}>
+                                    <Link
+                                        href={`/shippings/${shipping.id}`}
+                                        style={{ textDecoration: 'none', color: 'black', fontSize: 10 }}
+                                        title={generateToolTip(shipping)}
+                                    >{shipping.number}</Link>
+                                </span>
+                            )}
+                    </div>
+                </div>
+
+            return x
         }
 
         const result = Array.from(summary[type].entries())
-            .map(([destination, x]) => buildString(type, destination, x.count))
+            .map(([destination, summary]) => buildData(destination, summary))
             .map((x, i) => <div key={i}>{x}</div>)
 
 
-        return result.length > 0 ? result : 0
+        return result.length > 0 ? result : '-'
     }
 
 
@@ -180,7 +239,7 @@ export default function LocationSummary() {
                                         .sort((a, b) => a[0].localeCompare(b[0]))
                                         .map(([type, summary]) => {
                                             return <>
-                                                <tr key={type} className="align-middle" >
+                                                <tr key={type} className="align-middle justify-content-center" >
                                                     <td width="40">{type}</td>
                                                     <td width="110">{getSummary(summary, 'recieved')}</td>
                                                     <td width="110">{getSummary(summary, 'created')}</td>
