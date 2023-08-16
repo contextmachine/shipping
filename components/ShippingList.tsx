@@ -1,13 +1,16 @@
 import ShippingItem from "@/components/ShippingItem";
-import { paginate } from "@/utils";
+import { dateInRange, paginate } from "@/utils";
+import { filterShippings } from "@/utils/filterUtils";
+import { dateComapare, sortShippings, statusSortValueMap } from "@/utils/sortUtils";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Pagination } from "../interfaces/PaginationInterface";
 import { Shipping } from "../interfaces/Shipping";
 import { AlertType } from "./Alert";
 import { ColumnFilter } from "./ColumnFilter";
+import DateFilter from "./DateFilter";
+import SortButton, { SortValue } from "./SortButton";
 import { statusMap } from "./Status";
-
 
 export interface ShippingListProps {
     shippings: Shipping[],
@@ -22,7 +25,12 @@ export interface ShippingListProps {
 
 export interface TableFilter {
     field: string,
-    value: string
+    value: any
+}
+
+export interface SortState {
+    field: string,
+    value: SortValue
 }
 
 
@@ -32,7 +40,11 @@ export default function ShippingList(props: ShippingListProps) {
     const router = useRouter()
     const [alert, setAlert] = useState<AlertType>()
     const [columnFilter, setColumnFilter] = useState<TableFilter>({ field: 'none', value: 'none' })
-    const [shippingList, setShippingList] = useState<Pagination | null>(null)
+    const [sortState, setSortState] = useState<SortState>({ field: 'id', value: 'ascending' })
+    const [pagination, setPagination] = useState<Pagination | null>()
+
+    const [filteredList, setFilteredList] = useState<Shipping[]>([])
+    const [sortedList, setSortedList] = useState<Shipping[]>([])
 
     const statusParams = Array.from(new Set(shippings.map(x => x.status)).values())
         .map(x => ({ value: x, label: statusMap.get(x) as string }))
@@ -47,96 +59,116 @@ export default function ShippingList(props: ShippingListProps) {
         setColumnFilter({ field: 'none', value: 'none' })
     }, [userFilter, searchId])
 
+
+    useEffect(() => {
+        const sorted = sortShippings(shippings, sortState)
+        if (sortState.value === 'descending') {
+            sorted.reverse()
+        }
+        setSortedList(sorted.slice())
+    }, [sortState, shippings])
+
     useEffect(() => {
         let filtered: Shipping[]
-        if (columnFilter.value === 'none') {
-            filtered = shippings
+        if (columnFilter.value === 'none' || columnFilter.value === null) {
+            filtered = sortedList
         } else {
-            switch (columnFilter.field) {
-                case 'status':
-                    filtered = shippings.filter(x => x.status === columnFilter.value)
-                    break
-                case 'contentType':
-                    filtered = shippings.filter(x => x.contentType === columnFilter.value)
-                    break
-                case 'from':
-                    filtered = shippings.filter(x => x.from === columnFilter.value)
-                    break
-                case 'to':
-                    filtered = shippings.filter(x => x.to === columnFilter.value)
-                    break
-                default:
-                    filtered = shippings
-            }
+            filtered = filterShippings(sortedList, columnFilter)
         }
+        setFilteredList(filtered)
+    }, [columnFilter, columnFilter.field, columnFilter.value, sortedList])
 
-        setShippingList(paginate(filtered as [], page, limit) as Pagination)
-    }, [columnFilter, limit, page, shippings])
+
+    useEffect(() => {
+        const pagination = paginate(filteredList as [], page, limit) as Pagination
+        setPagination(pagination)
+    }, [filteredList, limit, page])
 
     return <>
 
-        {shippingList &&
-            <>
-                <table className="table table-striped table-sm text-center">
-                    <thead>
-                        <tr className="justify-content-center">
-                            <th scope="col">ID</th>
-                            <th className="" scope="col">
-                                <ColumnFilter field={'status'} params={statusParams} columnFilter={columnFilter} setColumnFilter={setColumnFilter} />
-                                Статус
-                            </th>
-                            <th scope="col">
-                                <ColumnFilter field={'contentType'} params={contentParams} columnFilter={columnFilter} setColumnFilter={setColumnFilter} />
-                                Контент
-                            </th>
-                            <th scope="col">Кол-во</th>
-                            <th scope="col">
-                                <ColumnFilter field={'from'} params={fromParams} columnFilter={columnFilter} setColumnFilter={setColumnFilter} />
-                                Откуда
-                            </th>
-                            <th scope="col">
-                                <ColumnFilter field={'to'} params={toParams} columnFilter={columnFilter} setColumnFilter={setColumnFilter} />
-                                Куда
-                            </th>
-                            <th scope="col">Создан</th>
-                            <th scope="col">Отправлен</th>
-                            <th scope="col">Получен</th>
-                            {isAdmin && <th scope="col"></th>}
-                        </tr>
-                    </thead>
+        {pagination && <>
+            <table className="table table-striped table-sm text-center">
+                <thead>
+                    <tr className="justify-content-center">
+                        <th scope="col">
+                            ID
+                            <SortButton field='id' sortState={sortState} setSortState={setSortState} />
+                        </th>
+                        <th className="" scope="col">
+                            <ColumnFilter field='status' params={statusParams} columnFilter={columnFilter} setColumnFilter={setColumnFilter} />
+                            Статус
+                            <SortButton field='status' sortState={sortState} setSortState={setSortState} />
+                        </th>
+                        <th scope="col">
+                            <ColumnFilter field='contentType' params={contentParams} columnFilter={columnFilter} setColumnFilter={setColumnFilter} />
+                            Контент
+                            <SortButton field='contentType' sortState={sortState} setSortState={setSortState} />
+                        </th>
+                        <th scope="col">
+                            Кол-во
+                            <SortButton field='count' sortState={sortState} setSortState={setSortState} />
+                        </th>
+                        <th scope="col">
+                            <ColumnFilter field='from' params={fromParams} columnFilter={columnFilter} setColumnFilter={setColumnFilter} />
+                            Откуда
+                            <SortButton field='from' sortState={sortState} setSortState={setSortState} />
+                        </th>
+                        <th scope="col">
+                            <ColumnFilter field='to' params={toParams} columnFilter={columnFilter} setColumnFilter={setColumnFilter} />
+                            Куда
+                            <SortButton field='to' sortState={sortState} setSortState={setSortState} />
+                        </th>
+                        <th scope="col">
+                            <DateFilter field='created' columnFilter={columnFilter} setColumnFilter={setColumnFilter} />
+                            Создан
+                            <SortButton field='created' sortState={sortState} setSortState={setSortState} />
+                        </th>
+                        <th scope="col">
+                            <DateFilter field='sended' columnFilter={columnFilter} setColumnFilter={setColumnFilter} />
+                            Отправлен
+                            <SortButton field='sended' sortState={sortState} setSortState={setSortState} />
+                        </th>
+                        <th scope="col">
+                            <DateFilter field='recieved' columnFilter={columnFilter} setColumnFilter={setColumnFilter} />
+                            Получен
+                            <SortButton field='recieved' sortState={sortState} setSortState={setSortState} />
+                        </th>
+                        {isAdmin && <th scope="col"></th>}
+                    </tr>
+                </thead>
 
-                    <tbody>
-                        {shippingList.items.map((post: Shipping, i: number) => (
-                            <ShippingItem key={i} index={i} shipping={post} setAlert={setAlert} admin={isAdmin} />
-                        ))}
-                    </tbody>
-                </table>
-                {loading && <div className="spinner-border" role="status"></div>}
+                <tbody>
+                    {pagination.items.map((post: Shipping, i: number) => (
+                        <ShippingItem key={i} index={i} shipping={post} setAlert={setAlert} admin={isAdmin} />
+                    ))}
+                </tbody>
+            </table>
+            {loading && <div className="spinner-border" role="status"></div>}
 
-                <nav className="my-5">
-                    <ul className="pagination justify-content-center">
-                        {page > 1 && <li className="page-item">
-                            <button className="page-link text-primary" onClick={() => {
-                                router.push(`?page=${page - 1}&limit=${limit}`)
-                            }}>
-                                <i className="bi bi-arrow-left"></i>
-                            </button>
-                        </li>}
+            <nav className="my-5">
+                <ul className="pagination justify-content-center">
+                    {page > 1 && <li className="page-item">
+                        <button className="page-link text-primary" onClick={() => {
+                            router.push(`?page=${page - 1}&limit=${limit}`)
+                        }}>
+                            <i className="bi bi-arrow-left"></i>
+                        </button>
+                    </li>}
 
-                        {shippingList.totalPages > 1 && <li className="page-item page-link text-primary">
-                            Page {page}/{shippingList.totalPages!}
-                        </li>}
+                    {pagination.totalPages > 1 && <li className="page-item page-link text-primary">
+                        Page {page}/{pagination.totalPages!}
+                    </li>}
 
-                        {page < shippingList.totalPages && <li className="page-item">
-                            <button className="page-link text-primary" onClick={() => {
-                                router.push(`?page=${page + 1}&limit=${limit}`)
-                            }}>
-                                <i className="bi bi-arrow-right"></i>
-                            </button>
-                        </li>}
-                    </ul>
-                </nav>
-            </>
+                    {page < pagination.totalPages && <li className="page-item">
+                        <button className="page-link text-primary" onClick={() => {
+                            router.push(`?page=${page + 1}&limit=${limit}`)
+                        }}>
+                            <i className="bi bi-arrow-right"></i>
+                        </button>
+                    </li>}
+                </ul>
+            </nav>
+        </>
         }
     </>
 }

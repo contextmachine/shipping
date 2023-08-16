@@ -1,172 +1,21 @@
 import { _Head } from "@/components"
 import { Header } from "@/components/Header"
-import { DateRangePicker } from 'rsuite'
 import { useEffect, useState } from 'react';
 import { useQuery } from "@apollo/client";
 import { GET_SHIPPINGS } from "@/graphql/queries";
-import { Shipping } from "@/interfaces/Shipping";
 import { parseShippings } from "@/graphql/parsers/parsers";
+import { dateInRange } from "@/utils";
+import { DateRange } from "@/utils/types";
+import { addShippingToSummary, getSummary, Summary } from "./utils";
+import DateRangePickerComponent from "@/components/DateRangePicker";
 import Link from "next/link"
-
 import 'rsuite/dist/rsuite-no-reset.min.css';
-import { statusColorMap, statusMap } from "@/components/Status";
-import { formatDate } from "@/utils";
-
-type DateRange = [Date, Date]
-
-interface SummaryData {
-    count: number,
-    shippings: Shipping[]
-}
-
-type SummaryByDestination = Map<string, SummaryData>
-
-
-interface Summary {
-    recieved: SummaryByDestination,
-    created: SummaryByDestination,
-    sended: SummaryByDestination,
-}
-
-
-
-
-
-type SummaryByType = Map<string, Summary>
-type SummaryByLocation = Map<string, SummaryByType>
 
 export default function LocationSummary() {
-
 
     const [dateRange, setDateRange] = useState<DateRange | undefined | null>()
     const { data } = useQuery(GET_SHIPPINGS)
     const [summary, setSummary] = useState<Map<string, Map<string, Summary>> | undefined>()
-
-
-    const dateInRange = (dateString: string | undefined, range: DateRange) => {
-        const date = dateString ? new Date(dateString) : undefined
-        return date && date.valueOf() >= range[0].valueOf() && date.valueOf() <= range[1].valueOf()
-    }
-
-
-
-    const addShippingToSummary = (summaryByLocation: SummaryByLocation, shipping: Shipping, status: 'recieved' | 'created' | 'sended') => {
-
-        let location: string
-        let destination: string
-
-        if (status === 'created' || status === 'sended') {
-            location = shipping.from
-            destination = shipping.to
-        } else {
-            location = shipping.to
-            destination = shipping.from
-        }
-
-        if (!summaryByLocation.has(location)) {
-            summaryByLocation.set(location, new Map<string, Summary>())
-        }
-
-        const summaryByType = summaryByLocation.get(location) as SummaryByType
-
-        if (!summaryByType.has(shipping.contentType)) {
-            summaryByType.set(shipping.contentType, {
-                recieved: new Map<string, SummaryData>(),
-                created: new Map<string, SummaryData>(),
-                sended: new Map<string, SummaryData>()
-            })
-        }
-        const summary = summaryByType.get(shipping.contentType) as Summary
-
-        if (!summary[status].has(destination)) {
-            summary[status].set(destination, { count: 0, shippings: [] })
-        }
-
-        const summaryByDestination = summary[status].get(destination) as SummaryData
-
-        summaryByDestination.count = summaryByDestination.count + shipping.count
-        summaryByDestination.shippings.push(shipping)
-
-    }
-
-
-    const getSummary = (summary: Summary, type: keyof Summary) => {
-
-        const formatDestination = (x: string) => {
-            const parts = x.split(' — ')
-            return parts[parts.length - 1]
-        }
-
-        const statusTime = (shipping: Shipping) => {
-            switch (shipping.status) {
-                case 'created':
-                    return formatDate(shipping.createdAt)
-                case 'sended':
-                    return formatDate(shipping.sendedAt)
-                case 'recieved':
-                    return formatDate(shipping.recievedAt)
-                default:
-                    return '-'
-            }
-        }
-
-        const generateToolTip = (shipping: Shipping) => {
-            const from = formatDestination(shipping.from)
-            const to = formatDestination(shipping.to)
-            const tooltip = [
-                `${from} → ${to}`,
-                `${shipping.contentType}    ${shipping.count} шт.`,
-                `${statusMap.get(shipping.status)} ${statusTime(shipping)}`
-            ].join('\n')
-            return tooltip
-        }
-
-        const buildData = (destination: string, summary: SummaryData) => {
-
-            const elements = [
-                <div key='count'>{summary.count}</div>,
-                <div key='arrow' className="align-self-center mx-1" style={{ color: 'gray', fontSize: 12 }}>→</div>,
-                <div key='dest' className="align-self-center" style={{ color: 'gray', fontSize: 12 }}>{formatDestination(destination)}</div>,
-            ]
-
-            if (type === 'recieved') elements.reverse()
-
-            const x =
-                <div>
-                    <div className="d-flex flex-row align-middle justify-content-center">
-                        {elements}
-                    </div>
-                    <div className="d-flex flex-row flex-wrap align-middle justify-content-center">
-                        {summary.shippings
-                            .sort((a, b) => a.number - b.number)
-                            .map((shipping, i) =>
-                                <span key={i} className="d-flex mx-1 justify-content-center" style={{
-                                    backgroundColor: statusColorMap.get(shipping.status),
-                                    height: 15,
-                                    borderRadius: 6,
-                                    width: 20
-                                }}>
-                                    <Link
-                                        href={`/shippings/${shipping.id}`}
-                                        style={{ textDecoration: 'none', color: 'black', fontSize: 10 }}
-                                        title={generateToolTip(shipping)}
-                                    >{shipping.number}</Link>
-                                </span>
-                            )}
-                    </div>
-                </div>
-
-            return x
-        }
-
-        const result = Array.from(summary[type].entries())
-            .map(([destination, summary]) => buildData(destination, summary))
-            .map((x, i) => <div key={i}>{x}</div>)
-
-
-        return result.length > 0 ? result : '-'
-    }
-
 
     useEffect(() => {
         if (dateRange && data) {
@@ -205,16 +54,8 @@ export default function LocationSummary() {
             </Header>
             <div className="d-flex flex-row mt-3">
                 <h3>Сводка по локациям</h3>
-
                 <div className="d-inline-flex flex-column mx-5">
-                    <DateRangePicker
-                        placeholder={'Выберите период'}
-                        showOneCalendar={true}
-                        value={dateRange}
-                        onChange={setDateRange}
-                        format="dd-MM-yyyy"
-                    ></DateRangePicker>
-
+                    <DateRangePickerComponent dateRange={dateRange} setDateRange={setDateRange} />
                 </div>
             </div>
             {summary &&

@@ -3,6 +3,7 @@ import fs from "fs"
 import path from "path"
 import html2canvas from 'html2canvas';
 import QRCode from "qrcode"
+import { DateRange } from './types';
 
 //https://javascript.info/task/truncate
 export const truncate = (str: string, length: number) => {
@@ -155,4 +156,15 @@ export const groupByMultipleKeys = <T, U>(list: T[], keyGetters: (value: T) => (
         })
     }
     return grouped
+}
+
+
+export const dateInRange = (dateString: string | undefined, range: DateRange) => {
+    const date = dateString ? new Date(dateString) : undefined
+    return date && date.valueOf() >= range[0].valueOf() && date.valueOf() <= range[1].valueOf()
+}
+
+export const formatLocation = (x: string) => {
+    const parts = x.split(' — ')
+    return parts[parts.length - 1]
 }

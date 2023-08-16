@@ -38,7 +38,7 @@ export default function ShippingItem(props: ShippingItemProps) {
 
     return <>
         <tr key={index} className="align-middle" >
-            <td width="40">{shipping.number}</td>
+            <td width="80">{shipping.number}</td>
             <td width="90">
                 <Link href={`/shippings/${shipping.id}`} className="btn" >
                     <Status status={shipping.status} />
@@ -48,9 +48,9 @@ export default function ShippingItem(props: ShippingItemProps) {
             <td width="100">{shipping.count}</td>
             <td width="150">{shipping.from}</td>
             <td width="150">{shipping.to}</td>
-            <td width="110">{formatDate(shipping.createdAt)}</td>
-            <td width="110">{formatDate(shipping.sendedAt)}</td>
-            <td width="110">{formatDate(shipping.recievedAt)}</td>
+            <td width="130">{formatDate(shipping.createdAt)}</td>
+            <td width="130">{formatDate(shipping.sendedAt)}</td>
+            <td width="130">{formatDate(shipping.recievedAt)}</td>
             {admin &&
                 <td>
                     <div className="d-flex align-items-center">

@@ -26,9 +26,9 @@ export function ColumnFilter(props: ColumnFilterProps) {
     }
 
     return <>
-        <div className="mb-3">
+        <div className="mb-3" >
             <select
-                style={{ border: '0' }}
+                style={{ border: '0', fontWeight: 'normal' }}
                 ref={filter}
                 value={columnFilter.field === field ? columnFilter.value : 'none'}
                 onChange={(e) => handleOnChange(e.target.value)}>
