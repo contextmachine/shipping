@@ -3,22 +3,23 @@ import { DateRangePicker } from "rsuite";
 import { startOfDay, endOfDay, addDays, subDays } from 'date-fns';
 import { RangeType } from "rsuite/esm/DatePicker";
 
-const ranges: RangeType<DateRange>[] = [
+
+const getRanges = (now: Date): RangeType<DateRange>[] => [
     {
         label: 'Сегодня',
-        value: [startOfDay(new Date()), endOfDay(new Date())]
+        value: [startOfDay(now), endOfDay(now)]
     },
     {
         label: 'Вчера',
-        value: [startOfDay(addDays(new Date(), -1)), endOfDay(addDays(new Date(), -1))]
+        value: [startOfDay(addDays(now, -1)), endOfDay(addDays(now, -1))]
     },
     {
         label: 'Последние 7 дней',
-        value: [startOfDay(subDays(new Date(), 6)), endOfDay(new Date())]
+        value: [startOfDay(subDays(now, 6)), endOfDay(now)]
     },
     {
         label: 'За все время',
-        value: [new Date('2023-07-01T00:00:00.728Z'), endOfDay(new Date())]
+        value: [new Date('2023-07-01T00:00:00.728Z'), endOfDay(now)]
     }
 ]
 
@@ -31,6 +32,8 @@ interface DateRangePickerComponentProps {
 export default function DateRangePickerComponent(props: DateRangePickerComponentProps) {
 
     const { dateRange, setDateRange } = props
+
+    const ranges = getRanges(new Date())
 
     return <DateRangePicker
         placeholder={'Выберите период'}

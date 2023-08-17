@@ -94,7 +94,7 @@ export default function ShippingList(props: ShippingListProps) {
                             ID
                             <SortButton field='id' sortState={sortState} setSortState={setSortState} />
                         </th>
-                        <th className="" scope="col">
+                        <th scope="col">
                             <ColumnFilter field='status' params={statusParams} columnFilter={columnFilter} setColumnFilter={setColumnFilter} />
                             Статус
                             <SortButton field='status' sortState={sortState} setSortState={setSortState} />

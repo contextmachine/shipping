@@ -7,18 +7,18 @@ import { ColumnFilterProps } from "./ColumnFilter";
 import { useState } from "react";
 import { TableFilter } from "./ShippingList";
 
-const ranges: RangeType<DateRange>[] = [
+const getRanges = (now: Date): RangeType<DateRange>[] => [
     {
         label: 'Сегодня',
-        value: [startOfDay(new Date()), endOfDay(new Date())]
+        value: [startOfDay(now), endOfDay(now)]
     },
     {
         label: 'Вчера',
-        value: [startOfDay(addDays(new Date(), -1)), endOfDay(addDays(new Date(), -1))]
+        value: [startOfDay(addDays(now, -1)), endOfDay(addDays(now, -1))]
     },
     {
         label: 'Последние 7 дней',
-        value: [startOfDay(subDays(new Date(), 6)), endOfDay(new Date())]
+        value: [startOfDay(subDays(now, 6)), endOfDay(now)]
     }
 ]
 
@@ -36,6 +36,8 @@ export default function DateFilter(props: DateFilterProps) {
     const handleOnChange = (value: DateRange | null) => {
         setColumnFilter({ field: field, value: value })
     }
+
+    const ranges = getRanges(new Date())
 
     return <div className="mb-3">
         <DateRangePicker
