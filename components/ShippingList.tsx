@@ -91,47 +91,73 @@ export default function ShippingList(props: ShippingListProps) {
                 <thead>
                     <tr className="justify-content-center">
                         <th scope="col">
-                            ID
-                            <SortButton field='id' sortState={sortState} setSortState={setSortState} />
+                            <div className="d-flex flex-nowrap">
+                                ID
+                                <SortButton field='id' sortState={sortState} setSortState={setSortState} />
+                            </div>
+
                         </th>
-                        <th scope="col">
+                        <th scope="col" >
                             <ColumnFilter field='status' params={statusParams} columnFilter={columnFilter} setColumnFilter={setColumnFilter} />
-                            Статус
-                            <SortButton field='status' sortState={sortState} setSortState={setSortState} />
+                            <div className="d-flex flex-nowrap">
+                                Статус
+                                <SortButton field='status' sortState={sortState} setSortState={setSortState} />
+                            </div>
                         </th>
                         <th scope="col">
                             <ColumnFilter field='contentType' params={contentParams} columnFilter={columnFilter} setColumnFilter={setColumnFilter} />
-                            Контент
-                            <SortButton field='contentType' sortState={sortState} setSortState={setSortState} />
+                            <div className="d-flex flex-nowrap">
+                                Контент
+                                <SortButton field='contentType' sortState={sortState} setSortState={setSortState} />
+                            </div>
+
                         </th>
                         <th scope="col">
-                            Кол-во
-                            <SortButton field='count' sortState={sortState} setSortState={setSortState} />
+                            <div className="d-flex flex-nowrap">
+                                Кол-во
+                                <SortButton field='count' sortState={sortState} setSortState={setSortState} />
+                            </div>
+
                         </th>
                         <th scope="col">
                             <ColumnFilter field='from' params={fromParams} columnFilter={columnFilter} setColumnFilter={setColumnFilter} />
-                            Откуда
-                            <SortButton field='from' sortState={sortState} setSortState={setSortState} />
+                            <div className="d-flex flex-nowrap">
+                                Откуда
+                                <SortButton field='from' sortState={sortState} setSortState={setSortState} />
+                            </div>
+
                         </th>
                         <th scope="col">
                             <ColumnFilter field='to' params={toParams} columnFilter={columnFilter} setColumnFilter={setColumnFilter} />
-                            Куда
-                            <SortButton field='to' sortState={sortState} setSortState={setSortState} />
+                            <div className="d-flex flex-nowrap">
+                                Куда
+                                <SortButton field='to' sortState={sortState} setSortState={setSortState} />
+                            </div>
+
                         </th>
                         <th scope="col">
                             <DateFilter field='created' columnFilter={columnFilter} setColumnFilter={setColumnFilter} />
-                            Создан
-                            <SortButton field='created' sortState={sortState} setSortState={setSortState} />
+                            <div className="d-flex flex-nowrap">
+                                Создан
+                                <SortButton field='created' sortState={sortState} setSortState={setSortState} />
+                            </div>
+
                         </th>
                         <th scope="col">
                             <DateFilter field='sended' columnFilter={columnFilter} setColumnFilter={setColumnFilter} />
-                            Отправлен
-                            <SortButton field='sended' sortState={sortState} setSortState={setSortState} />
+                            <div className="d-flex flex-nowrap">
+                                Отправлен
+                                <SortButton field='sended' sortState={sortState} setSortState={setSortState} />
+                            </div>
+
                         </th>
                         <th scope="col">
                             <DateFilter field='recieved' columnFilter={columnFilter} setColumnFilter={setColumnFilter} />
-                            Получен
-                            <SortButton field='recieved' sortState={sortState} setSortState={setSortState} />
+                            <div className="d-flex flex-nowrap">
+                                Получен
+                                <SortButton field='recieved' sortState={sortState} setSortState={setSortState} />
+                            </div>
+
                         </th>
                         {isAdmin && <th scope="col"></th>}
                     </tr>
