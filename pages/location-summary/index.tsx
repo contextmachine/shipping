@@ -4,12 +4,87 @@ import { useEffect, useState } from 'react';
 import { useQuery } from "@apollo/client";
 import { GET_SHIPPINGS } from "@/graphql/queries";
 import { parseShippings } from "@/graphql/parsers/parsers";
-import { dateInRange } from "@/utils";
+import { dateInRange, formatDate, formatLocation } from "@/utils";
 import { DateRange } from "@/utils/types";
-import { addShippingToSummary, getSummary, Summary } from "./utils";
+import { addShippingToSummary, Summary, SummaryData } from "./utils";
 import DateRangePickerComponent from "@/components/DateRangePicker";
 import Link from "next/link"
 import 'rsuite/dist/rsuite-no-reset.min.css';
+import { Shipping } from "@/interfaces/Shipping";
+import { statusColorMap, statusMap } from "@/components/Status";
+
+
+const getSummary = (summary: Summary, type: keyof Summary) => {
+
+    const statusTime = (shipping: Shipping) => {
+        switch (shipping.status) {
+            case 'created':
+                return formatDate(shipping.createdAt)
+            case 'sended':
+                return formatDate(shipping.sendedAt)
+            case 'recieved':
+                return formatDate(shipping.recievedAt)
+            default:
+                return '-'
+        }
+    }
+
+    const generateToolTip = (shipping: Shipping) => {
+        const from = formatLocation(shipping.from)
+        const to = formatLocation(shipping.to)
+        const tooltip = [
+            `${from} → ${to}`,
+            `${shipping.contentType}    ${shipping.count} шт.`,
+            `${statusMap.get(shipping.status)} ${statusTime(shipping)}`
+        ].join('\n')
+        return tooltip
+    }
+
+    const buildData = (destination: string, summary: SummaryData) => {
+
+        const elements = [
+            <div key='count'>{summary.count}</div>,
+            <div key='arrow' className="align-self-center mx-1" style={{ color: 'gray', fontSize: 12 }}>→</div>,
+            <div key='dest' className="align-self-center" style={{ color: 'gray', fontSize: 12 }}>{formatLocation(destination)}</div>,
+        ]
+
+        if (type === 'recieved') elements.reverse()
+
+        const result = <div>
+            <div className="d-flex flex-row align-middle justify-content-center">
+                {elements}
+            </div>
+            <div className="d-flex flex-row flex-wrap align-middle justify-content-center">
+                {summary.shippings
+                    .sort((a, b) => a.number - b.number)
+                    .map((shipping, i) =>
+                        <span key={i} className="d-flex mx-1 justify-content-center" style={{
+                            backgroundColor: statusColorMap.get(shipping.status),
+                            height: 15,
+                            borderRadius: 6,
+                            width: 20
+                        }}>
+                            <Link
+                                href={`/shippings/${shipping.id}`}
+                                style={{ textDecoration: 'none', color: 'black', fontSize: 10 }}
+                                title={generateToolTip(shipping)}
+                            >{shipping.number}</Link>
+                        </span>
+                    )}
+            </div>
+        </div>
+
+        return result
+    }
+
+    const result = Array.from(summary[type].entries())
+        .map(([destination, summary]) => buildData(destination, summary))
+        .map((x, i) => <div key={i}>{x}</div>)
+
+
+    return result.length > 0 ? result : '-'
+}
+
 
 export default function LocationSummary() {
 
@@ -39,7 +114,7 @@ export default function LocationSummary() {
 
 
         }
-    }, [dateRange])
+    }, [data, dateRange])
 
     return <>
         <_Head title="Сводка по локациям" />
