@@ -44,7 +44,7 @@ export default function ShippingItem(props: ShippingItemProps) {
                     <Status status={shipping.status} />
                 </Link>
             </td>
-            <td width="140">{shipping.contentType}</td>
+            <td width="120">{shipping.contentType}</td>
             <td width="100">{shipping.count}</td>
             <td width="150">{shipping.from}</td>
             <td width="150">{shipping.to}</td>

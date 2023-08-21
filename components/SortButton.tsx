@@ -38,7 +38,7 @@ export default function SortButton(props: SortButtonProps) {
     }
 
     return <button
-        style={{ backgroundColor: 'Background' }}
+        style={{ backgroundColor: 'white' }}
         onClick={handleOnClick}
     >
         {(state === 'none' || state === 'ascending') &&
