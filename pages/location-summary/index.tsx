@@ -11,6 +11,8 @@ import Link from "next/link"
 import { Shipping } from "@/interfaces/Shipping";
 import { statusColorMap, statusMap } from "@/components/Status";
 import 'rsuite/dist/rsuite-no-reset.min.css';
+import { User } from "@/interfaces/UserInterface";
+import { useRouter } from "next/router";
 
 
 export interface Summary {
@@ -144,6 +146,17 @@ export default function LocationSummary() {
     const [dateRange, setDateRange] = useState<DateRange | undefined | null>()
     const { data } = useQuery(GET_SHIPPINGS)
     const [summary, setSummary] = useState<Map<string, Map<string, Summary>> | undefined>()
+    const router = useRouter()
+
+
+    useEffect(() => {
+        const user = (JSON.parse(localStorage.getItem('user') as string) as User)
+        const allowed = user?.role === 'admin' || user?.login === 'lahta'
+
+        if (!allowed) {
+            router.push('../')
+        }
+    }, [router])
 
     useEffect(() => {
         if (dateRange && data) {

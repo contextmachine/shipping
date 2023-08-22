@@ -23,6 +23,8 @@ export default function Home({ page, limit }: { page: string, limit: string }) {
     const [shippingList, setShippingList] = useState<Shipping[]>([])
     const [currentFilter, setCurrentFilter] = useState('all')
 
+    const [showSummaryButton, setShowSummaryButton] = useState(false)
+
     const { data: shippingsData, loading: shippingListLoading } = useQuery(GET_SHIPPINGS)
 
     useEffect(() => {
@@ -77,10 +79,14 @@ export default function Home({ page, limit }: { page: string, limit: string }) {
         }
     }
 
+
+
     useEffect(() => {
         const user = (JSON.parse(localStorage.getItem('user') as string) as User)
+        const lahtaUserId = '4f5cf275-0964-4f8a-a5ad-f0140b429182'
         setAdmin(user?.role === 'admin')
         setUser(user)
+        setShowSummaryButton(user?.role === 'admin' || user?.id === lahtaUserId)
 
         if (!localStorage.getItem('user')) {
             router.push('/login')
@@ -99,7 +105,7 @@ export default function Home({ page, limit }: { page: string, limit: string }) {
                 {isAdmin && <Link href="/users" className="btn text-w btn-sm btn-primary mx-1 flex-nowrap" >
                     Пользователи
                 </Link>}
-                {isAdmin && <Link href="/location-summary" className="btn text-w btn-sm btn-primary mx-1 flex-nowrap" >
+                {showSummaryButton && <Link href="/location-summary" className="btn text-w btn-sm btn-primary mx-1 flex-nowrap" >
                     Сводка
                 </Link>}
                 <Link href="/logout" className="btn btn-sm btn-danger mx-1 align-middle">Выйти</Link>
