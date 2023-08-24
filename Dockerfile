@@ -17,9 +17,9 @@ ENV NEXT_TELEMETRY_DISABLED=1
 
 WORKDIR /app
 
-COPY --from=builder --chown=root:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=root:nodejs /app/.next/static ./.next/static
-COPY --from=builder --chown=root:nodejs /app/.env ./.env
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/.env ./.env
 
 EXPOSE 3000
 
