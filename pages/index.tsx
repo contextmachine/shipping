@@ -113,8 +113,7 @@ export default function Home({ page, limit }: { page: string, limit: string }) {
 
             <div className="d-flex flex-row justify-content-start">
                 <div className="d-inline-flex flex-column ">
-                    <div className="d-flex flex-row ">
-
+                    <div className="d-flex flex-row mb-4">
                         <div style={{ width: 220 }} >
                             <div className="input-group w-100 " >
                                 <div className="input-group-text"><i className="bi bi-search text-gray" /></div>

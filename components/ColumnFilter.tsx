@@ -1,5 +1,5 @@
 import { useRef } from "react"
-import { TableFilter } from "./ShippingList"
+import { TableFilter, TableFilters } from "./ShippingList"
 
 
 export interface Param {
@@ -11,8 +11,8 @@ export interface Param {
 export interface ColumnFilterProps {
     field: string
     params: Param[],
-    columnFilter: TableFilter,
-    setColumnFilter: (e: TableFilter) => void
+    columnFilter: TableFilters,
+    setColumnFilter: (e: TableFilters) => void
 }
 
 
@@ -22,21 +22,23 @@ export function ColumnFilter(props: ColumnFilterProps) {
     const filter = useRef<HTMLSelectElement>(null)
 
     const handleOnChange = (value: string) => {
-        setColumnFilter({ field: field, value: value })
+        columnFilter.set(field, value)
+        const newMap = new Map([...columnFilter])
+        setColumnFilter(newMap)
     }
 
     return <>
         <div className="mb-3" >
             <select
+                className="justify-self-center"
                 style={{ border: '0', fontWeight: 'normal' }}
                 ref={filter}
-                value={columnFilter.field === field ? columnFilter.value : 'none'}
+                value={columnFilter.get(field)}
                 onChange={(e) => handleOnChange(e.target.value)}>
 
-                <option value='none'>нет</option>
+                <option value={'none'}>нет</option>
                 {params.map((x, i) => (<option key={i} value={x.value}> {x.label} </option>))}
             </select>
-
         </div>
     </>
 }

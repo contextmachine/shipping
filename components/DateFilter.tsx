@@ -5,7 +5,7 @@ import { RangeType } from "rsuite/esm/DatePicker";
 import 'rsuite/dist/rsuite-no-reset.min.css';
 import { ColumnFilterProps } from "./ColumnFilter";
 import { useState } from "react";
-import { TableFilter } from "./ShippingList";
+import { TableFilter, TableFilters } from "./ShippingList";
 
 const getRanges = (now: Date): RangeType<DateRange>[] => [
     {
@@ -24,8 +24,8 @@ const getRanges = (now: Date): RangeType<DateRange>[] => [
 
 export interface DateFilterProps {
     field: string
-    columnFilter: TableFilter,
-    setColumnFilter: (e: TableFilter) => void
+    columnFilter: TableFilters,
+    setColumnFilter: (e: TableFilters) => void
 }
 
 
@@ -34,7 +34,10 @@ export default function DateFilter(props: DateFilterProps) {
     const { columnFilter, setColumnFilter, field } = props
 
     const handleOnChange = (value: DateRange | null) => {
-        setColumnFilter({ field: field, value: value })
+        columnFilter.set(field, value)
+        const newMap = new Map([...columnFilter])
+        setColumnFilter(newMap)
+
     }
 
     const ranges = getRanges(new Date())
@@ -44,7 +47,7 @@ export default function DateFilter(props: DateFilterProps) {
             size='xs'
             placeholder={'нет'}
             showOneCalendar={true}
-            value={columnFilter.field === field ? columnFilter.value as DateRange : null}
+            value={columnFilter.get(field) === 'none' ? null : columnFilter.get(field)}
             onChange={handleOnChange}
             format="dd.MM.yy"
             ranges={ranges as any}

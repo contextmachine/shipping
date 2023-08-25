@@ -43,23 +43,30 @@ export const filterList: { value: string, label: string, filter: FilterFunction 
 export const filterMap = new Map(filterList.map(x => ([x.value, x.filter])))
 
 
-export const filterShippings = (shippings: Shipping[], columnFilter: TableFilter): Shipping[] => {
-    switch (columnFilter.field) {
-        case 'status':
-            return shippings.filter(x => x.status === columnFilter.value)
-        case 'contentType':
-            return shippings.filter(x => x.contentType === columnFilter.value)
-        case 'from':
-            return shippings.filter(x => x.from === columnFilter.value)
-        case 'to':
-            return shippings.filter(x => x.to === columnFilter.value)
-        case 'created':
-            return shippings.filter(x => dateInRange(x.createdAt, columnFilter.value))
-        case 'sended':
-            return shippings.filter(x => dateInRange(x.sendedAt, columnFilter.value))
-        case 'recieved':
-            return shippings.filter(x => dateInRange(x.recievedAt, columnFilter.value))
-        default:
-            return shippings
-    }
-}
+const columnFilterList = [
+    {
+        field: 'status',
+        filter: (shippings: Shipping[], value: any) => shippings.filter(x => x.status === value)
+    }, {
+        field: 'contentType',
+        filter: (shippings: Shipping[], value: any) => shippings.filter(x => x.contentType === value)
+    }, {
+        field: 'from',
+        filter: (shippings: Shipping[], value: any) => shippings.filter(x => x.from === value)
+    }, {
+        field: 'to',
+        filter: (shippings: Shipping[], value: any) => shippings.filter(x => x.to === value)
+    }, {
+        field: 'createdAt',
+        filter: (shippings: Shipping[], value: any) => shippings.filter(x => dateInRange(x.createdAt, value))
+    }, {
+        field: 'sendedAt',
+        filter: (shippings: Shipping[], value: any) => shippings.filter(x => dateInRange(x.sendedAt, value))
+    }, {
+        field: 'recievedAt',
+        filter: (shippings: Shipping[], value: any) => shippings.filter(x => dateInRange(x.recievedAt, value))
+    },
+
+]
+
+export const columnFilterMap: Map<string, (shippings: Shipping[], value: any) => Shipping[]> = new Map(columnFilterList.map(x => ([x.field, x.filter])))

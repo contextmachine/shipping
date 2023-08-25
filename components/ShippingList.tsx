@@ -1,7 +1,8 @@
 import ShippingItem from "@/components/ShippingItem";
 import { dateInRange, paginate } from "@/utils";
-import { filterShippings } from "@/utils/filterUtils";
+import { columnFilterMap } from "@/utils/filterUtils";
 import { dateComapare, sortShippings, statusSortValueMap } from "@/utils/sortUtils";
+import { Button, IconButton } from "@mui/material";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
 import { Pagination } from "../interfaces/PaginationInterface";
@@ -11,6 +12,7 @@ import { ColumnFilter } from "./ColumnFilter";
 import DateFilter from "./DateFilter";
 import SortButton, { SortValue } from "./SortButton";
 import { statusMap } from "./Status";
+import CloseIcon from '@mui/icons-material/Close';
 
 export interface ShippingListProps {
     shippings: Shipping[],
@@ -28,6 +30,8 @@ export interface TableFilter {
     value: any
 }
 
+export type TableFilters = Map<string, any>
+
 export interface SortState {
     field: string,
     value: SortValue
@@ -39,7 +43,7 @@ export default function ShippingList(props: ShippingListProps) {
     const { shippings, isAdmin, page, limit, userFilter, loading, searchId } = props
     const router = useRouter()
     const [alert, setAlert] = useState<AlertType>()
-    const [columnFilter, setColumnFilter] = useState<TableFilter>({ field: 'none', value: 'none' })
+    const [columnFilters, setColumnFilter] = useState<TableFilters>(new Map([...columnFilterMap].map(([field, _]) => ([field, 'none']))))
     const [sortState, setSortState] = useState<SortState>({ field: 'id', value: 'ascending' })
     const [pagination, setPagination] = useState<Pagination | null>()
 
@@ -56,8 +60,13 @@ export default function ShippingList(props: ShippingListProps) {
         .map(x => ({ value: x, label: x }))
 
     useEffect(() => {
-        setColumnFilter({ field: 'none', value: 'none' })
+        resetFilters()
     }, [userFilter, searchId])
+
+
+    const resetFilters = () => {
+        setColumnFilter(new Map([...columnFilterMap].map(([field, _]) => ([field, 'none']))))
+    }
 
 
     useEffect(() => {
@@ -70,13 +79,23 @@ export default function ShippingList(props: ShippingListProps) {
 
     useEffect(() => {
         let filtered: Shipping[]
-        if (columnFilter.value === 'none' || columnFilter.value === null) {
-            filtered = sortedList
-        } else {
-            filtered = filterShippings(sortedList, columnFilter)
-        }
+        filtered = sortedList
+        const filters = [...columnFilters]
+        filters.forEach(([field, value]) => {
+            if (value !== 'none') {
+                const filter = columnFilterMap.get(field)!
+                filtered = filter(filtered, value)
+            }
+        })
         setFilteredList(filtered)
-    }, [columnFilter, columnFilter.field, columnFilter.value, sortedList])
+    }, [columnFilters, sortedList])
+
+    const disableReset = useMemo(() => {
+        const disabled = ([...columnFilters]
+            .map(([_, v]) => v === 'none' || v === undefined ? 0 : 1) as number[])
+            .reduce((a, c) => a + c, 0) === 0
+        return disabled
+    }, [columnFilters])
 
 
     useEffect(() => {
@@ -91,6 +110,16 @@ export default function ShippingList(props: ShippingListProps) {
                 <thead>
                     <tr className="justify-content-center">
                         <th scope="col">
+                            <div className="d-flex flex-start mb-2" >
+                                <IconButton
+                                    size='small'
+                                    disabled={disableReset}
+                                    onClick={resetFilters}
+                                    title='Очистить фильтры'
+                                >
+                                    <CloseIcon />
+                                </IconButton>
+                            </div>
                             <div className="d-flex flex-nowrap justify-content-center">
                                 ID
                                 <SortButton field='id' sortState={sortState} setSortState={setSortState} />
@@ -98,14 +127,14 @@ export default function ShippingList(props: ShippingListProps) {
 
                         </th>
                         <th scope="col" >
-                            <ColumnFilter field='status' params={statusParams} columnFilter={columnFilter} setColumnFilter={setColumnFilter} />
+                            <ColumnFilter field='status' params={statusParams} columnFilter={columnFilters} setColumnFilter={setColumnFilter} />
                             <div className="d-flex flex-nowrap justify-content-center">
                                 Статус
                                 <SortButton field='status' sortState={sortState} setSortState={setSortState} />
                             </div>
                         </th>
                         <th scope="col">
-                            <ColumnFilter field='contentType' params={contentParams} columnFilter={columnFilter} setColumnFilter={setColumnFilter} />
+                            <ColumnFilter field='contentType' params={contentParams} columnFilter={columnFilters} setColumnFilter={setColumnFilter} />
                             <div className="d-flex flex-nowrap justify-content-center">
                                 Контент
                                 <SortButton field='contentType' sortState={sortState} setSortState={setSortState} />
@@ -120,7 +149,7 @@ export default function ShippingList(props: ShippingListProps) {
 
                         </th>
                         <th scope="col">
-                            <ColumnFilter field='from' params={fromParams} columnFilter={columnFilter} setColumnFilter={setColumnFilter} />
+                            <ColumnFilter field='from' params={fromParams} columnFilter={columnFilters} setColumnFilter={setColumnFilter} />
                             <div className="d-flex flex-nowrap justify-content-center">
                                 Откуда
                                 <SortButton field='from' sortState={sortState} setSortState={setSortState} />
@@ -128,7 +157,7 @@ export default function ShippingList(props: ShippingListProps) {
 
                         </th>
                         <th scope="col">
-                            <ColumnFilter field='to' params={toParams} columnFilter={columnFilter} setColumnFilter={setColumnFilter} />
+                            <ColumnFilter field='to' params={toParams} columnFilter={columnFilters} setColumnFilter={setColumnFilter} />
                             <div className="d-flex flex-nowrap justify-content-center">
                                 Куда
                                 <SortButton field='to' sortState={sortState} setSortState={setSortState} />
@@ -136,7 +165,7 @@ export default function ShippingList(props: ShippingListProps) {
 
                         </th>
                         <th scope="col">
-                            <DateFilter field='created' columnFilter={columnFilter} setColumnFilter={setColumnFilter} />
+                            <DateFilter field='createdAt' columnFilter={columnFilters} setColumnFilter={setColumnFilter} />
                             <div className="d-flex flex-nowrap justify-content-center">
                                 Создан
                                 <SortButton field='created' sortState={sortState} setSortState={setSortState} />
@@ -144,7 +173,7 @@ export default function ShippingList(props: ShippingListProps) {
 
                         </th>
                         <th scope="col">
-                            <DateFilter field='sended' columnFilter={columnFilter} setColumnFilter={setColumnFilter} />
+                            <DateFilter field='sendedAt' columnFilter={columnFilters} setColumnFilter={setColumnFilter} />
                             <div className="d-flex flex-nowrap justify-content-center">
                                 Отправлен
                                 <SortButton field='sended' sortState={sortState} setSortState={setSortState} />
@@ -152,7 +181,7 @@ export default function ShippingList(props: ShippingListProps) {
 
                         </th>
                         <th scope="col">
-                            <DateFilter field='recieved' columnFilter={columnFilter} setColumnFilter={setColumnFilter} />
+                            <DateFilter field='recievedAt' columnFilter={columnFilters} setColumnFilter={setColumnFilter} />
                             <div className="d-flex flex-nowrap justify-content-center">
                                 Получен
                                 <SortButton field='recieved' sortState={sortState} setSortState={setSortState} />
