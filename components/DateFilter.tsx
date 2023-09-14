@@ -1,12 +1,8 @@
-import { DateRange } from "@/utils/types";
-import { ColumnFilterProps } from "./ColumnFilter";
-import { useState } from "react";
-import { TableFilter, TableFilters } from "./ShippingList";
+import { TableFilters } from "./ShippingList";
 import { DatePicker, TimeRangePickerProps } from "antd";
 import dayjs, { Dayjs } from "dayjs";
 
 const { RangePicker } = DatePicker
-
 
 
 export interface DateFilterProps {
@@ -40,12 +36,17 @@ export default function DateFilter(props: DateFilterProps) {
     }
 
 
-    return <div className="mb-3">
+    return <div
+        className="mb-3"
+        style={{
+            fontWeight: 'normal'
+        }}>
 
         <RangePicker
             size='small'
             placeholder={['нет', '']}
             format="DD.MM.YY"
+            separator={<div>-</div>}
             onChange={(e, _) => handleOnChange(e)}
             presets={rangePresets}
             value={columnFilter.get(field) === 'none' ? null : columnFilter.get(field)}
