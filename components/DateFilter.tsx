@@ -1,26 +1,13 @@
 import { DateRange } from "@/utils/types";
-import { DateRangePicker } from "rsuite";
-import { startOfDay, endOfDay, addDays, subDays } from 'date-fns';
-import { RangeType } from "rsuite/esm/DatePicker";
-import 'rsuite/dist/rsuite-no-reset.min.css';
 import { ColumnFilterProps } from "./ColumnFilter";
 import { useState } from "react";
 import { TableFilter, TableFilters } from "./ShippingList";
+import { DatePicker, TimeRangePickerProps } from "antd";
+import dayjs, { Dayjs } from "dayjs";
 
-const getRanges = (now: Date): RangeType<DateRange>[] => [
-    {
-        label: 'Сегодня',
-        value: [startOfDay(now), endOfDay(now)]
-    },
-    {
-        label: 'Вчера',
-        value: [startOfDay(addDays(now, -1)), endOfDay(addDays(now, -1))]
-    },
-    {
-        label: 'Последние 7 дней',
-        value: [startOfDay(subDays(now, 6)), endOfDay(now)]
-    }
-]
+const { RangePicker } = DatePicker
+
+
 
 export interface DateFilterProps {
     field: string
@@ -33,24 +20,35 @@ export default function DateFilter(props: DateFilterProps) {
 
     const { columnFilter, setColumnFilter, field } = props
 
-    const handleOnChange = (value: DateRange | null) => {
-        columnFilter.set(field, value)
+
+    const rangePresets: TimeRangePickerProps['presets'] = [
+        { label: 'Вчера', value: [dayjs().add(-1, 'd').startOf('day'), dayjs().add(-1, 'd').endOf('day')] },
+        { label: 'Сегодня', value: [dayjs().startOf('day'), dayjs().endOf('day')] },
+        { label: 'Последние 7 дней', value: [dayjs().add(-6, 'd').startOf('day'), dayjs().endOf('day')] },
+    ];
+
+    const handleOnChange = (dates: [Dayjs | null, Dayjs | null] | null) => {
+
+        if (dates && dates[0] && dates[1]) {
+            columnFilter.set(field, [dates[0].startOf('day'), dates[1].endOf('day')])
+        } else {
+            columnFilter.set(field, 'none')
+        }
         const newMap = new Map([...columnFilter])
         setColumnFilter(newMap)
 
     }
 
-    const ranges = getRanges(new Date())
 
     return <div className="mb-3">
-        <DateRangePicker
-            size='xs'
-            placeholder={'нет'}
-            showOneCalendar={true}
+
+        <RangePicker
+            size='small'
+            placeholder={['нет', '']}
+            format="DD.MM.YY"
+            onChange={(e, _) => handleOnChange(e)}
+            presets={rangePresets}
             value={columnFilter.get(field) === 'none' ? null : columnFilter.get(field)}
-            onChange={handleOnChange}
-            format="dd.MM.yy"
-            ranges={ranges as any}
-        ></DateRangePicker>
+        />
     </div>
 }

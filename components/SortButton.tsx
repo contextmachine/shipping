@@ -38,11 +38,12 @@ export default function SortButton(props: SortButtonProps) {
     }
 
     return <button
-        style={{ backgroundColor: 'white' }}
+        style={{ backgroundColor: 'white', border: 0 }}
         onClick={handleOnClick}
     >
         {(state === 'none' || state === 'ascending') &&
-            <ArrowDropDownIcon color={state === 'none' ? 'disabled' : 'inherit'} />}
+            <ArrowDropDownIcon
+                color={state === 'none' ? 'disabled' : 'inherit'} />}
         {(state === 'descending') &&
             <ArrowDropUpIcon />}
     </button>

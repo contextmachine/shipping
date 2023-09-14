@@ -10,7 +10,6 @@ import DateRangePickerComponent from "@/components/DateRangePicker";
 import Link from "next/link"
 import { Shipping } from "@/interfaces/Shipping";
 import { statusColorMap, statusMap } from "@/components/Status";
-import 'rsuite/dist/rsuite-no-reset.min.css';
 import { User } from "@/interfaces/UserInterface";
 import { useRouter } from "next/router";
 
@@ -177,8 +176,8 @@ export default function LocationSummary() {
             })
 
             setSummary(summary)
-
-
+        } else if (!dateRange) {
+            setSummary(undefined)
         }
     }, [data, dateRange])
 

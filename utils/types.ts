@@ -1,4 +1,5 @@
 
+import type { Dayjs } from 'dayjs';
 
 
-export type DateRange = [Date, Date]
+export type DateRange = [Dayjs, Dayjs]
