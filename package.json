@@ -10,6 +10,7 @@
         "test": "jest --coverage --runInBand"
     },
     "dependencies": {
+        "@ant-design/icons": "^5.2.6",
         "@apollo/client": "^3.7.15",
         "@apollo/server": "^4.7.3",
         "@as-integrations/next": "^2.0.0",
@@ -24,10 +25,10 @@
         "@types/bcrypt": "^5.0.0",
         "@types/cors": "^2.8.13",
         "@types/node": "18.14.0",
-        "@types/react": "18.0.28",
+        "@types/react": "^18.2.22",
         "@types/react-dom": "18.0.11",
         "@types/supertest": "^2.0.12",
-        "antd": "^5.9.0",
+        "antd": "^5.9.2",
         "apollo-server-core": "^3.12.0",
         "bcrypt": "^5.1.0",
         "bootstrap": "^5.2.3",

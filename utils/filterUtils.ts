@@ -1,6 +1,7 @@
 import { TableFilter } from "@/components/ShippingList"
 import { Shipping } from "@/interfaces/Shipping"
 import { dateInRange } from "@/utils";
+import { DateRange } from "./types";
 
 export type FilterFunction = (shipping: Shipping, user: string) => boolean
 
@@ -70,3 +71,32 @@ const columnFilterList = [
 ]
 
 export const columnFilterMap: Map<string, (shippings: Shipping[], value: any) => Shipping[]> = new Map(columnFilterList.map(x => ([x.field, x.filter])))
+
+
+const columnFilterList2 = [
+    {
+        field: 'status',
+        filter: (value: string, record: any) => record.status === value
+    }, {
+        field: 'contentType',
+        filter: (value: string, record: any) => record.contentType === value
+    }, {
+        field: 'from',
+        filter: (value: string, record: any) => record.from === value
+    }, {
+        field: 'to',
+        filter: (value: string, record: any) => record.to === value
+    }, {
+        field: 'createdAt',
+        filter: (value: DateRange, record: any) => dateInRange(record.createdAt, value)
+    }, {
+        field: 'sendedAt',
+        filter: (value: DateRange, record: any) => dateInRange(record.sendedAt, value)
+    }, {
+        field: 'recievedAt',
+        filter: (value: DateRange, record: any) => dateInRange(record.recievedAt, value)
+    },
+
+]
+
+export const columnFilterMap2 = new Map(columnFilterList2.map(x => ([x.field, x.filter])))
