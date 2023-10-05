@@ -7,16 +7,23 @@ import { useMutation, useQuery } from "@apollo/client";
 import { GET_CONTENT_TYPES, ADD_SHIPPING, GET_PLACES, GET_SHIPPINGS } from "@/graphql/queries";
 import { User } from "@/interfaces/UserInterface";
 import { parseContentTypes, parseLocations } from "@/graphql/parsers/parsers";
-import { Header } from "@/components/Header";
+import { Button, Card, Form, Input, Space, Select } from "antd";
+import { useLogin } from "@/components/hooks/useUser";
+
+
+const formItemLayout = { labelCol: { span: 4 }, wrapperCol: { span: 14 } }
+const buttonItemLayout = { wrapperCol: { span: 14, offset: 4 } }
+
+
 
 export default function Create() {
+    useLogin()
     const router = useRouter()
     const creationForm = useRef<HTMLFormElement>(null)
-    const [alert, setAlert] = useState<AlertType>()
     const [loading, showLoading] = useState<boolean>(false)
-    const contentType = useRef<HTMLSelectElement>(null)
-    const count = useRef<HTMLInputElement>(null)
-    const targetLocation = useRef<HTMLSelectElement>(null)
+
+    const [form] = Form.useForm();
+
 
     const [addShipping] = useMutation(ADD_SHIPPING, {
         onCompleted: () => {
@@ -25,22 +32,12 @@ export default function Create() {
         refetchQueries: [GET_SHIPPINGS]
     })
 
-    useEffect(() => {
-        if (!localStorage.getItem('user')) {
-            router.push('/login')
-        }
-    })
-
-    useLayoutEffect(() => {
-        contentType.current?.focus()
-    })
-
     const places = parseLocations(useQuery(GET_PLACES).data)
     const contentTypes = parseContentTypes(useQuery(GET_CONTENT_TYPES).data)
         .sort((a, b) => {
 
-            const aParts = a.split('-')
-            const bParts = b.split('-')
+            const aParts: string[] = a.split('-')
+            const bParts: string[] = b.split('-')
 
             const alfabet = aParts[0].localeCompare(bParts[0])
 
@@ -54,8 +51,7 @@ export default function Create() {
 
         })
 
-    const handleOnSubmit = async (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
+    const handleOnSubmit = async (values: any) => {
         showLoading(true)
 
         const id = uuid()
@@ -66,9 +62,9 @@ export default function Create() {
                 id: id,
                 from: user.id,
                 createdAt: new Date().toISOString(),
-                count: parseInt(count.current!.value),
-                to: targetLocation.current?.value,
-                content: contentType.current?.value,
+                count: parseInt(values.count),
+                to: values.to,
+                content: values.contentType,
             }
         })
 
@@ -81,48 +77,71 @@ export default function Create() {
     return <>
         <_Head title="Create shipping" />
 
-        <div className="container mt-3">
-            <Header>
-                <div className="d-flex flex-end">
-                    <Link href="/" className="btn btn-sm btn-primary">
-                        Список отправок
-                    </Link>
-                </div>
+        <Space
+            direction="vertical"
+            align="center"
+            style={{
+                width: '100%',
+            }}
+        >
+            <Card
+                title='Создать отправку'
+                bordered={true}
+                style={{
+                    width: '1280px',
+                    margin: '50px',
+                }}
+                extra={<>
+                    <Space.Compact                    >
+                        <Button type='default' href="/" >Назад</Button>
+                    </Space.Compact>
+                </>}
 
-            </Header>
-            <h4 className="my-3">Создать отправку</h4>
+            >
+                <Form
+                    {...formItemLayout}
+                    layout='horizontal'
+                    form={form}
+                    onFinish={(e) => handleOnSubmit(e)}
+                >
+                    <Form.Item
+                        label='Контент'
+                        name="contentType"
+                        rules={[{ required: true, message: 'Выберете контент!' }]}
+                    >
+                        <Select
+                            placeholder="Выберете контент"
+                            options={contentTypes.map(x => ({ value: x, label: x }))}
+                        />
+                    </Form.Item>
+                    <Form.Item
+                        label="Количество"
+                        name='count'
+                        rules={[{ required: true, message: 'Введите количество!' }]}
+                    >
+                        <Input placeholder="Количество" />
+                    </Form.Item>
+                    <Form.Item
+                        label="Получатель"
+                        name="to"
+                        rules={[{ required: true, message: 'Выберете получателя!' }]}
+                    >
+                        <Select
+                            placeholder="Выберете получателя"
+                            options={places.map(x => ({ value: x.id, label: x.location }))}
+                        />
+                    </Form.Item>
 
-            {alert && <Alert display={alert.display} status={alert.status} concern={alert.concern} action={alert.action} />}
+                    <Form.Item {...buttonItemLayout}>
+                        <Button htmlType="submit" type="primary" loading={loading}>Создать</Button>
+                    </Form.Item>
+                </Form>
+            </Card>
+        </Space>
 
-            <div className="card shadow-sm">
-                <div className="card-body">
-                    <form ref={creationForm} onSubmit={handleOnSubmit}>
 
-                        <div className="mb-3">
-                            <label htmlFor="contentType" className="form-label">Контент</label>
-                            <select id="contentType" name="contentType" className="form-control" required ref={contentType} defaultValue={'selectContent'}>
-                                <option value={'selectContent'} disabled={true}>Выберите контент</option>
-                                {contentTypes?.map((content, i) => (<option key={i} value={content}>{content}</option>))}
-                            </select>
-                        </div>
-                        <div className="mb-3">
-                            <label htmlFor="count" className="form-label">Количество</label>
-                            <input type="number" id="count" name="count" className="form-control" required ref={count}></input>
-                        </div>
-                        <div className="mb-3">
-                            <label htmlFor="targetLocation" className="form-label">Получатель</label>
-                            <select id="targetLocation" name="targetLocation" className="form-control" required ref={targetLocation} defaultValue={'selectLocation'}>
-                                <option value={'selectLocation'} disabled={true}>Выберите получателя</option>
-                                {places.map((place, i) => (<option key={place.id} value={place.id}>{place.location}</option>))}
-                            </select>
-                        </div>
-                        <button type="submit" className="btn btn-primary">
-                            {loading && <div className="spinner-border spinner-border-sm me-1" role="status"></div>} Сохранить
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
+
+
     </>
 }
 

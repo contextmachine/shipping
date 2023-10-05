@@ -7,6 +7,8 @@ import { useMutation, useQuery } from "@apollo/client";
 import { parseContentTypes, parseLocations, parseShipping } from "@/graphql/parsers/parsers";
 import { statusList } from "@/components/Status";
 import { EDIT_SHIPPING, GET_SHIPPING, GET_PLACES, GET_SHIPPINGS, GET_CONTENT_TYPES } from "@/graphql/queries"
+import { Button, Card, Dropdown, Form, Input, MenuProps, Select, Space } from "antd"
+import { useAdminOnly, useUser } from "@/components/hooks/useUser";
 
 
 interface DateState {
@@ -15,22 +17,20 @@ interface DateState {
     recievedAt: string | null
 }
 
-export default function Edit() {
-    const router = useRouter()
+const formItemLayout = { labelCol: { span: 4 }, wrapperCol: { span: 14 } }
+const buttonItemLayout = { wrapperCol: { span: 14, offset: 4 } }
 
-    const editForm = useRef<HTMLFormElement>(null)
-    const [alert, setAlert] = useState<AlertType>()
+export default function Edit() {
+
+    useAdminOnly()
+    const router = useRouter()
     const [loading, showLoading] = useState<boolean>(false)
-    const contentType = useRef<HTMLSelectElement>(null)
-    const count = useRef<HTMLInputElement>(null)
-    const targetLocation = useRef<HTMLSelectElement>(null)
-    const sourceLocation = useRef<HTMLSelectElement>(null)
-    const status = useRef<HTMLSelectElement>(null)
+    const [form] = Form.useForm();
     const [dateState, setDateState] = useState<DateState | null>(null)
 
     const [editShipping] = useMutation(EDIT_SHIPPING, {
         onCompleted: () => {
-            editForm.current?.reset()
+            form.resetFields()
             if (shipping) {
                 router.push(`/shippings/${shipping.id}`)
             }
@@ -44,16 +44,8 @@ export default function Edit() {
     const shipping = parseShipping(data)
 
     useEffect(() => {
-        if (!localStorage.getItem('user')) {
-            router.push('/login')
-        }
-
-        const user: User = JSON.parse(localStorage.getItem('user') as string)
-
-        if (user.role !== 'admin') {
-            router.push('/')
-        }
-    })
+        console.log(shipping)
+    }, [shipping])
 
     const onStatusChange = (status: string) => {
         if (shipping) {
@@ -79,19 +71,18 @@ export default function Edit() {
         }
     }
 
-    const handleOnSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    const handleOnSubmit = async (values: any) => {
 
         if (shipping) {
-            e.preventDefault()
             showLoading(true)
 
             const variables = {
                 id: shipping.id,
-                count: parseInt(count.current!.value),
-                content: contentType.current?.value,
-                from: sourceLocation.current?.value,
-                to: targetLocation.current?.value,
-                status: status.current?.value,
+                count: parseInt(values.count),
+                content: values.contentType,
+                from: values.from,
+                to: values.to,
+                status: values.status,
                 createdAt: dateState ? dateState.createdAt : shipping.createdAt,
                 sendedAt: dateState ? dateState.sendedAt : shipping.sendedAt,
                 recievedAt: dateState ? dateState.recievedAt : shipping.recievedAt,
@@ -107,57 +98,93 @@ export default function Edit() {
         return <>
             <_Head title="Edit shipping" />
 
-            <div className="container mt-5">
-                <div className="d-flex justify-content-between align-items-center mb-5">
-                    <h1>Редактировать отправку</h1>
-
-                    <div className="d-flex align-items-center">
-                        <Link href="/" className="btn btn-primary me-3">
-                            Список отправок
-                        </Link>
-                    </div>
-                </div>
-
-                {alert && <Alert display={alert.display} status={alert.status} concern={alert.concern} action={alert.action} />}
-
-                <div className="card shadow-sm">
-                    <div className="card-body">
-                        <form ref={editForm} onSubmit={handleOnSubmit}>
-                            <div className="mb-3">
-                                <label htmlFor="contentType" className="form-label">Контент</label>
-                                <select id="contentType" name="contentType" className="form-control" required ref={contentType} defaultValue={shipping.contentType}>
-                                    {contentTypes?.map((content, i) => (<option key={i} value={content}>{content}</option>))}
-                                </select>
-                            </div>
-                            <div className="mb-3">
-                                <label htmlFor="count" className="form-label">Количество</label>
-                                <input type="number" id="count" name="count" className="form-control" required ref={count} defaultValue={shipping.count}></input>
-                            </div>
-                            <div className="mb-3">
-                                <label htmlFor="sourceLocation" className="form-label">Отправитель</label>
-                                <select id="sourceLocation" name="sourceLocation" className="form-control" required ref={sourceLocation} defaultValue={shipping.fromId}>
-                                    {places?.map((place, i) => (<option key={place.id} value={place.id}>{place.location}</option>))}
-                                </select>
-                            </div>
-                            <div className="mb-3">
-                                <label htmlFor="targetLocation" className="form-label">Получатель</label>
-                                <select id="targetLocation" name="targetLocation" className="form-control" required ref={targetLocation} defaultValue={shipping.toId}>
-                                    {places?.map((place, i) => (<option key={place.id} value={place.id}>{place.location}</option>))}
-                                </select>
-                            </div>
-                            <div className="mb-3">
-                                <label htmlFor="status" className="form-label" >Статус</label>
-                                <select id="status" name="status" className="form-control" required ref={status} defaultValue={shipping.status} onChange={(e) => onStatusChange(e.target.value)}>
-                                    {statusList.map((status, i) => (<option key={status.name} value={status.name}>{status.label}</option>))}
-                                </select>
-                            </div>
-                            <button type="submit" className="btn btn-primary">
-                                {loading && <div className="spinner-border spinner-border-sm me-1" role="status"></div>} Сохранить
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
+            <Space
+                direction="vertical"
+                align="center"
+                style={{
+                    width: '100%',
+                }}
+            >
+                <Card
+                    title={'Редактировать отправку'}
+                    bordered={true}
+                    style={{
+                        width: '1280px',
+                        margin: '50px',
+                    }}
+                    extra={<>
+                        <Space.Compact                    >
+                            <Button type='default' href="/" >Назад</Button>
+                        </Space.Compact>
+                    </>}
+                >
+                    <Form
+                        {...formItemLayout}
+                        layout='horizontal'
+                        form={form}
+                        onFinish={(e) => handleOnSubmit(e)}
+                        initialValues={{
+                            contentType: shipping.contentType,
+                            count: shipping.count,
+                            from: shipping.fromId,
+                            to: shipping.toId,
+                            status: shipping.status
+                        }}
+                    >
+                        <Form.Item
+                            label='Контент'
+                            name="contentType"
+                            rules={[{ required: true, message: 'Выберете контент!' }]}
+                        >
+                            <Select
+                                placeholder="Выберете контент"
+                                options={contentTypes.map(x => ({ value: x, label: x }))}
+                            />
+                        </Form.Item>
+                        <Form.Item
+                            label="Количество"
+                            name='count'
+                            rules={[{ required: true, message: 'Введите количество!' }]}
+                        >
+                            <Input placeholder="Количество" autoComplete="off" />
+                        </Form.Item>
+                        <Form.Item
+                            label="Отправитель"
+                            name="from"
+                            rules={[{ required: true, message: 'Выберете отправителя!' }]}
+                        >
+                            <Select
+                                placeholder="Выберете отправителя"
+                                options={places.map(x => ({ value: x.id, label: x.location }))}
+                            />
+                        </Form.Item>
+                        <Form.Item
+                            label="Получатель"
+                            name="to"
+                            rules={[{ required: true, message: 'Выберете получателя!' }]}
+                        >
+                            <Select
+                                placeholder="Выберете получателя"
+                                options={places.map(x => ({ value: x.id, label: x.location }))}
+                            />
+                        </Form.Item>
+                        <Form.Item
+                            label="Статус"
+                            name="status"
+                            rules={[{ required: true, message: 'Выберете статус!' }]}
+                        >
+                            <Select
+                                placeholder="Выберете статус"
+                                options={statusList.map(x => ({ value: x.name, label: x.label }))}
+                                onChange={(e) => onStatusChange(e)}
+                            />
+                        </Form.Item>
+                        <Form.Item {...buttonItemLayout}>
+                            <Button htmlType="submit" type="primary" loading={loading}>Сохранить</Button>
+                        </Form.Item>
+                    </Form>
+                </Card>
+            </Space>
         </>
     } else {
         return <></>

@@ -1,157 +1,116 @@
 import { _Head } from "@/components"
 import { useRouter } from "next/router"
-import Link from "next/link"
-import { useEffect, useRef, useState } from "react"
-import ShippingList from "../components/ShippingList"
-import { useQuery } from "@apollo/client"
-import { parseShippings } from "@/graphql/parsers/parsers"
+import { useEffect, useMemo, useState } from "react"
 import { User } from "../interfaces/UserInterface"
-import { Header } from "@/components/Header"
-import { Shipping } from "@/interfaces/Shipping"
-import { filterList, filterMap } from "@/utils/filterUtils"
-import { GET_SHIPPINGS } from '@/graphql/queries'
+import { Button, Card, Dropdown, MenuProps, Space } from "antd"
+import {
+    UserOutlined,
+    FileAddOutlined,
+    LogoutOutlined,
+    TeamOutlined,
+} from '@ant-design/icons';
+import ShippingTable from "@/components/shippingTable/ShippingTable"
+import LocationSummary from "@/components/summary/summary"
+import { useLogin, useUser } from "@/components/hooks/useUser"
 
-export default function Home({ page, limit }: { page: string, limit: string }) {
+const lahtaUserId = '4f5cf275-0964-4f8a-a5ad-f0140b429182'
 
+const tabList = [
+    {
+        key: 'shippingList',
+        label: 'Список отправок',
+    },
+    {
+        key: 'summary',
+        label: 'Сводка',
+    },
+];
 
+export default function Home() {
+
+    useLogin()
+    const user = useUser()
     const router = useRouter()
-    const [user, setUser] = useState<User>()
-    const [isAdmin, setAdmin] = useState<boolean>(false)
-    const [searchId, setSearchId] = useState<number>(NaN)
-    const userFilterSelect = useRef<HTMLSelectElement>(null)
-    const searchField = useRef<HTMLInputElement>(null)
-    const [shippingList, setShippingList] = useState<Shipping[]>([])
-    const [currentFilter, setCurrentFilter] = useState('all')
 
-    const [showSummaryButton, setShowSummaryButton] = useState(false)
+    const [activeTab, setActiveTab] = useState<string>('shippingList');
 
-    const { data: shippingsData, loading: shippingListLoading } = useQuery(GET_SHIPPINGS)
+    const showSummary = useMemo(() => {
+        return user?.role === 'admin' || user?.id === lahtaUserId
+    }, [user])
 
-    useEffect(() => {
-        if (user) {
-            const userFilter = filterMap.get(currentFilter)
-            if (userFilter) {
-                const shippings = parseShippings(shippingsData)
 
-                let filtered: Shipping[]
-                if (isAdmin) {
-                    filtered = shippings.filter(x => userFilter(x, user.id as string))
-                } else {
-                    filtered = shippings
-                        .filter(x => x.toId === user.id || x.fromId === user.id)
-                        .filter(x => userFilter(x, user.id as string))
-                }
-                setShippingList(filtered)
-            } else {
-                setShippingList(parseShippings(shippingsData))
+    const userMenuItems: MenuProps['items'] = [
+        {
+            label: 'Список пользователей',
+            key: '1',
+            icon: <TeamOutlined />,
+            onClick: () => {
+                router.push('./users')
             }
-        }
-    }, [currentFilter, isAdmin, searchId, shippingsData, user])
-
-
-    useEffect(() => {
-        const shippings = parseShippings(shippingsData)
-
-        if (isNaN(searchId)) {
-            if (searchField && searchField.current) {
-                searchField.current.value = ''
+        },
+        {
+            label: 'Выйти',
+            style: {
+                color: 'red'
+            },
+            key: '2',
+            icon: <LogoutOutlined />,
+            onClick: () => {
+                router.push('./logout')
             }
-        } else {
-            const filtered = shippings.filter(shipping =>
-                shipping.number.toString().startsWith(searchId.toString())
-            )
-            setShippingList(filtered)
-        }
-    }, [searchId, shippingsData])
-
-    const handleOnChangeFilter = () => {
-        if (userFilterSelect.current) {
-            setCurrentFilter(userFilterSelect.current.value)
-            setSearchId(NaN)
-        }
-    }
-
-    const handleSearch = () => {
-        if (searchField.current) {
-            const value = parseInt(searchField.current.value)
-            setSearchId(value)
-            setCurrentFilter('all')
-        }
-    }
-
-
-
-    useEffect(() => {
-        const user = (JSON.parse(localStorage.getItem('user') as string) as User)
-        const lahtaUserId = '4f5cf275-0964-4f8a-a5ad-f0140b429182'
-        setAdmin(user?.role === 'admin')
-        setUser(user)
-        setShowSummaryButton(user?.role === 'admin' || user?.id === lahtaUserId)
-
-        if (!localStorage.getItem('user')) {
-            router.push('/login')
-        }
-    }, [router])
+        },
+    ]
 
 
     return <>
         <_Head title="Список отправок" />
 
-        <main className="container mt-3">
-            <Header>
-                <Link href="/shippings/create" className="btn text-w btn-sm btn-primary mx-1 flex-nowrap" >
-                    Создать отправку
-                </Link>
-                {isAdmin && <Link href="/users" className="btn text-w btn-sm btn-primary mx-1 flex-nowrap" >
-                    Пользователи
-                </Link>}
-                {showSummaryButton && <Link href="/location-summary" className="btn text-w btn-sm btn-primary mx-1 flex-nowrap" >
-                    Сводка
-                </Link>}
-                <Link href="/logout" className="btn btn-sm btn-danger mx-1 align-middle">Выйти</Link>
-            </Header>
+        <main >
 
-            <div className="d-flex flex-row justify-content-start">
-                <div className="d-inline-flex flex-column ">
-                    <div className="d-flex flex-row mb-4">
-                        <div style={{ width: 220 }} >
-                            <div className="input-group w-100 " >
-                                <div className="input-group-text"><i className="bi bi-search text-gray" /></div>
-                                <input placeholder="ID" type='number' onChange={handleSearch} ref={searchField} className="form-control" />
-                            </div>
-                        </div>
-                        <div style={{ width: 10 }} />
-                        <div style={{ width: 220 }}>
-                            <div className="input-group w-100">
-                                <div className="input-group-text"><i className="bi bi-funnel-fill text-gray" /></div>
-                                <select value={currentFilter} defaultValue="all" onChange={handleOnChangeFilter} ref={userFilterSelect} className="form-control">
-                                    {filterList.map(x => (<option key={x.value} value={x.value}>{x.label}</option>))}
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <ShippingList
-                        searchId={searchId}
-                        loading={shippingListLoading}
-                        userFilter={currentFilter}
-                        shippings={shippingList}
-                        user={user?.id ? user.id : ''}
-                        isAdmin={isAdmin}
-                        page={parseInt(page)}
-                        limit={parseInt(limit)} />
-                </div>
-            </div>
+            <Space
+                direction="vertical"
+                align="center"
+                style={{
+                    width: '100%',
+                }}
+            >
+                {user &&
+                    <Card
+                        title={user?.location}
+                        bordered={true}
+                        style={{
+                            width: '1280px',
+                            margin: '50px',
+                        }}
+                        extra={<>
+                            <Space.Compact >
+                                <Button
+                                    type='default'
+                                    icon={<FileAddOutlined />}
+                                    onClick={() => router.push('./shippings/create')}
+                                >Создать отправку</Button>
+                                <Dropdown menu={{ items: user.role === 'admin' ? userMenuItems : userMenuItems.splice(1, 2) }}>
+                                    <Button type="default" icon={<UserOutlined />} />
+                                </Dropdown>
+                            </Space.Compact>
+                        </>}
+
+                        tabList={showSummary ? tabList : [tabList[0]]}
+                        activeTabKey={activeTab}
+                        onTabChange={setActiveTab}
+                    >
+                        {activeTab === 'shippingList' &&
+                            <ShippingTable user={user as any} />
+                        }
+                        {activeTab === 'summary' &&
+                            <LocationSummary />
+                        }
+                    </Card>
+                }
+            </Space>
         </main>
     </>
 }
 
-export async function getServerSideProps({ query: { page = 1, limit = 50 } }) {
 
-    return {
-        props: {
-            page: page,
-            limit: limit
-        }
-    }
-}
 

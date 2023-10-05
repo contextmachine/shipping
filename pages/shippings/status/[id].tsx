@@ -1,31 +1,19 @@
 import { _Head } from "@/components"
 import ShippingCard from "@/components/ShippingCard"
 import Status from "@/components/Status"
-import { User } from "@/interfaces/UserInterface"
-import Link from "next/link"
 import { useRouter } from "next/router"
-import { useEffect, useState } from "react"
 import { useMutation, useQuery } from "@apollo/client"
 import { parseShipping } from "@/graphql/parsers/parsers"
-import { Header } from "@/components/Header"
 import { GET_SHIPPING, SEND, RECIEVE } from '@/graphql/queries'
+import { Button, Card, Space } from "antd";
+import { useLogin, useUser } from "@/components/hooks/useUser"
 
 
 export default function CurrentStatus() {
 
+    useLogin()
+    const user = useUser()
     const router = useRouter()
-    const [user, setUser] = useState<User>()
-
-    useEffect(() => {
-        if (localStorage.getItem('user')) {
-            const user = JSON.parse(localStorage.getItem('user') as string) as User
-            setUser(user)
-        } else {
-            router.push('/login')
-            setUser(undefined)
-        }
-    }, [router])
-
     const { data } = useQuery(GET_SHIPPING, { variables: { 'id': router.query.id } })
     const [send] = useMutation(SEND)
     const [recieve] = useMutation(RECIEVE)
@@ -60,35 +48,55 @@ export default function CurrentStatus() {
     if (shipping) {
         return <>
             <_Head title={`Shipping Status | ${shipping?.id}`} />
+            <Space
+                direction="vertical"
+                align="center"
+                style={{
+                    width: '100%',
+                }}
+            >
+                <Card
+                    title='Создать отправку'
+                    bordered={true}
+                    style={{
+                        width: '1280px',
+                        margin: '50px',
+                    }}
+                    extra={<>
+                        <Space.Compact                    >
+                            <Button type='default' href="/" >Назад</Button>
+                        </Space.Compact>
+                    </>}
 
-            <main className="container mt-3" >
-                <Header>
-                    <Link href="/" className="btn btn-sm btn-primary">
-                        Список отправок
-                    </Link>
-                </Header >
-                <div className="d-flex justify-content-center">
-                    <div className="d-flex flex-column" style={{ width: '380px' }}>
-                        <ShippingCard shipping={shipping} showQr={false} />
-                        <div className="mb-3 d-flex justify-content-evenly" >
+                >
+
+                    <div className="d-flex justify-content-center">
+                        <div className="d-flex flex-column align-itmes-center mb-5" style={{ maxWidth: '380px' }}>
+                            <ShippingCard shipping={shipping} showQr={false} />
                             <Status status={shipping.status} />
-                        </div>
-                        <div className="d-flex align-items-center">
                             {shipping.status === 'created'
                                 && user?.id === shipping.fromId
-                                && <button className='btn btn-primary w-100' onClick={shippingUpdate}>
+                                && <Button
+                                    block
+                                    type="primary"
+                                    onClick={shippingUpdate}>
                                     Отправить
-                                </button>}
+                                </Button>}
                             {shipping.status === 'sended'
                                 && user?.id === shipping.toId
-                                && <button className='btn btn-primary w-100' onClick={shippingUpdate}>
+                                && <Button
+                                    block
+                                    type="primary"
+                                    onClick={shippingUpdate}>
                                     Получить
-                                </button>}
+                                </Button>}
                         </div>
                     </div>
-                </div>
 
-            </main>
+
+                </Card>
+            </Space>
+
         </>
     } else {
         return <> </>

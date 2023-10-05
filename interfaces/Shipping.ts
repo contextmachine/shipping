@@ -6,9 +6,9 @@ export type Shipping = {
     contentType: string,
     count: number,
     status: string,
-    createdAt: string,
-    sendedAt?: string
-    recievedAt?: string
+    createdAt: Date,
+    sendedAt: Date | undefined
+    recievedAt: Date | undefined
     fromId: string,
     toId: string
 }

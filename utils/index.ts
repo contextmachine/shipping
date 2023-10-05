@@ -4,6 +4,7 @@ import path from "path"
 import html2canvas from 'html2canvas';
 import QRCode from "qrcode"
 import { DateRange } from './types';
+import { Dayjs } from 'dayjs';
 
 //https://javascript.info/task/truncate
 export const truncate = (str: string, length: number) => {
@@ -75,17 +76,30 @@ export const getColorByStatus = (status: string): string => {
     }
 }
 
-export const formatDate = (isoDate: string | undefined): string => {
-    if (isoDate) {
-        const date = new Date(isoDate)
+export const formatDate = (date: Date | undefined): string => {
+    if (date) {
         return leftpad(date.getDate(), 2)
             + '.' + leftpad(date.getMonth() + 1, 2)
-            + '.' + date.getFullYear()
+            + '.' + date.getFullYear().toString().slice(2, 4)
             + ' ' + leftpad(date.getHours(), 2)
             + ':' + leftpad(date.getMinutes(), 2)
-            + ':' + leftpad(date.getSeconds(), 2);
     } else {
         return '-'
+    }
+}
+
+export const dateComapare = (a: Date | undefined, b: Date | undefined) => {
+
+    if (a && b) {
+        return a.getTime() - b.getTime()
+    } else {
+        if (!a && b) {
+            return 1
+        } else if (a && !b) {
+            return -1
+        } else {
+            return 0
+        }
     }
 }
 
@@ -159,8 +173,7 @@ export const groupByMultipleKeys = <T, U>(list: T[], keyGetters: (value: T) => (
 }
 
 
-export const dateInRange = (dateString: string | undefined, range: DateRange) => {
-    const date = dateString ? new Date(dateString) : undefined
+export const dateInRange = (date: Date | undefined, range: DateRange) => {
     return date && date.valueOf() >= range[0].valueOf() && date.valueOf() <= range[1].valueOf()
 }
 
