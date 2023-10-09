@@ -9,6 +9,7 @@ import { User } from '@/interfaces/UserInterface';
 import { useRouter } from 'next/router';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { DataType, initialColumns } from "./columns";
+import { useUser } from "../hooks/useUser";
 
 export interface ShippintTableProps {
     user: User
@@ -16,7 +17,6 @@ export interface ShippintTableProps {
 
 export default function ShippingTable(props: ShippintTableProps) {
 
-    const { user } = props
     const router = useRouter()
     const { data: shippingData, loading: shippingListLoading } = useQuery(GET_SHIPPINGS)
 
@@ -32,26 +32,27 @@ export default function ShippingTable(props: ShippintTableProps) {
     }, [shippingData])
 
 
-    useEffect(() => {
-        if (user.role === 'admin') {
+    const user = useUser()
 
-            const handleOnDelete = async (id: string) => {
-                if (!confirm("Are you sure you want to delete this post ?")) { return }
-                await deleteShipping({
-                    variables: {
-                        id: id
-                    }
-                })
+    useEffect(() => {
+
+        const handleOnDelete = async (id: string) => {
+            if (!confirm("Are you sure you want to delete this post ?")) { return }
+            await deleteShipping({
+                variables: {
+                    id: id
+                }
+            })
+        }
+        const actionsColumn = initialColumns.find(x => x.key === 'actions')!
+        actionsColumn.render = (text, record) => {
+            return <> {user?.role === 'admin' &&
+                <Space direction="horizontal">
+                    <EditOutlined type='button' style={{ color: "gray" }} onClick={() => router.push(`/shippings/edit/${record.uuid}`)} />
+                    <DeleteOutlined type='button' style={{ color: "gray" }} onClick={() => handleOnDelete(record.uuid)} />
+                </Space>
             }
-            const actionsColumn = initialColumns.find(x => x.key === 'actions')!
-            actionsColumn.render = (text, record) => {
-                return <>
-                    <Space direction="horizontal">
-                        <EditOutlined type='button' style={{ color: "gray" }} onClick={() => router.push(`/shippings/edit/${record.uuid}`)} />
-                        <DeleteOutlined type='button' style={{ color: "gray" }} onClick={() => handleOnDelete(record.uuid)} />
-                    </Space>
-                </>
-            }
+            </>
         }
     }, [deleteShipping, router, user])
 
@@ -67,7 +68,7 @@ export default function ShippingTable(props: ShippintTableProps) {
             shippings={shippings}
             setFiltered={setFiltered}
         />
-
+        <br />
         <Table
             tableLayout='fixed'
             loading={shippingListLoading}

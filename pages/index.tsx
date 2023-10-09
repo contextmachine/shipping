@@ -10,8 +10,9 @@ import {
     TeamOutlined,
 } from '@ant-design/icons';
 import ShippingTable from "@/components/shippingTable/ShippingTable"
-import LocationSummary from "@/components/summary/summary"
+import LocationSummary from "@/components/summary/Summary"
 import { useLogin, useUser } from "@/components/hooks/useUser"
+import { Logistic } from "@/components/logistic/logistic"
 
 const lahtaUserId = '4f5cf275-0964-4f8a-a5ad-f0140b429182'
 
@@ -23,6 +24,10 @@ const tabList = [
     {
         key: 'summary',
         label: 'Сводка',
+    },
+    {
+        key: 'logistic',
+        label: 'Логистика',
     },
 ];
 
@@ -104,6 +109,9 @@ export default function Home() {
                         }
                         {activeTab === 'summary' &&
                             <LocationSummary />
+                        }
+                        {activeTab === 'logistic' &&
+                            <Logistic />
                         }
                     </Card>
                 }

@@ -19,7 +19,6 @@ export interface DateFilterProps {
 export default function DateFilter(props: DateFilterProps) {
 
     const { columnKey, filters, setFilters } = props
-
     const [value, setValue] = useState<[Dayjs | null, Dayjs | null] | null>(null)
 
 
@@ -62,6 +61,11 @@ export default function DateFilter(props: DateFilterProps) {
 
     }, [columnKey, setFilters, value])
 
+    useEffect(() => {
+        if (filters.get(columnKey) === undefined) {
+            setValue(null)
+        }
+    }, [columnKey, filters])
 
 
     return <RangePicker

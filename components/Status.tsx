@@ -27,7 +27,6 @@ export const statusList = [{
 
 
 export const statusMap = new Map(statusList.map(x => ([x.name, x])))
-export const statusColorMap = new Map(statusList.map(x => ([x.name, x.color])))
 
 export default function Status(props: { status: string }) {
     const { status } = props

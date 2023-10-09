@@ -3,20 +3,21 @@ import { formatDate, formatLocation } from "@/utils"
 import { ColumnsType } from "antd/es/table"
 import Link from "next/link"
 import styled from "styled-components"
-import { statusMap, statusColorMap } from "../Status"
-import { Summary, SummaryData, SummaryDataType } from "./summary"
+import { statusMap } from "../Status"
+import { Summary, SummaryData, SummaryDataType } from "./Summary"
 
 
-const SmallTag = styled.span<{ $status: string }>`
+export const SmallTag = styled.div<{ $status: string }>`
     display: flex;
     background-color: ${({ $status }) => statusMap.get($status)?.hexColorBg};
     border: 1px solid ${({ $status }) => statusMap.get($status)?.hexColor};
     color: ${({ $status }) => statusMap.get($status)?.hexColor};
     height: 16px;
-    border-radius: 6px;
+    border-radius: 10px;
+    padding: 2px 2px 2px 2px;
     margin: 2px;
-    padding: 3px;
     align-items: center;
+    font-size: 11px;
 `
 
 export const summaryColumns: ColumnsType<SummaryDataType> = [
@@ -91,7 +92,7 @@ export const getSummary = (summary: Summary, type: keyof Summary) => {
         if (type === 'recieved') elements.reverse()
 
         const result = <div>
-            <div className="d-flex flex-row align-middle justify-content-center">
+            <div className="d-flex flex-row align-middle justify-content-center" >
                 {elements}
             </div>
             <div className="d-flex flex-row flex-wrap align-middle justify-content-center">
@@ -99,13 +100,11 @@ export const getSummary = (summary: Summary, type: keyof Summary) => {
                     .sort((a, b) => a.number - b.number)
                     .map((shipping, i) =>
                         <SmallTag key={i} $status={shipping.status}>
-                            <span>
-                                <Link
-                                    href={`/shippings/${shipping.id}`}
-                                    style={{ textDecoration: 'none', color: 'inherit', fontSize: 10 }}
-                                    title={generateToolTip(shipping)}
-                                >{shipping.number}</Link>
-                            </span>
+                            <Link
+                                href={`/shippings/${shipping.id}`}
+                                style={{ textDecoration: 'none', color: 'inherit', fontSize: 10 }}
+                                title={generateToolTip(shipping)}
+                            >{shipping.number}</Link>
                         </SmallTag>
                     )}
             </div>

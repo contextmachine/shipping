@@ -1,7 +1,6 @@
-import { FormEvent, useState, useLayoutEffect, useRef, useEffect } from "react"
-import Link from "next/link";
+import { useState, useRef } from "react"
 import { useRouter } from "next/router";
-import { Alert, AlertType, _Head } from "@/components";
+import { _Head } from "@/components";
 import { uuid } from "uuidv4";
 import { useMutation, useQuery } from "@apollo/client";
 import { GET_CONTENT_TYPES, ADD_SHIPPING, GET_PLACES, GET_SHIPPINGS } from "@/graphql/queries";

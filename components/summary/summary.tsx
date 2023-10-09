@@ -3,16 +3,14 @@ import { useEffect, useMemo, useState } from 'react';
 import { useQuery } from "@apollo/client";
 import { GET_SHIPPINGS } from "@/graphql/queries";
 import { parseShippings } from "@/graphql/parsers/parsers";
-import { dateInRange, formatDate, formatLocation } from "@/utils";
+import { dateInRange } from "@/utils";
 import { DateRange } from "@/utils/types";
 import DateRangePickerComponent from "@/components/DateRangePicker";
-import Link from "next/link"
 import { Shipping } from "@/interfaces/Shipping";
-import { statusColorMap, statusMap } from "@/components/Status";
 import { User } from "@/interfaces/UserInterface";
 import { useRouter } from "next/router";
 import { Table } from "antd";
-import { getSummary, summaryColumns } from "./columns";
+import { summaryColumns } from "./Columns";
 
 type SummaryByDestination = Map<string, SummaryData>
 type SummaryByType = Map<string, Summary>
@@ -111,8 +109,8 @@ export default function LocationSummary() {
         </div>
         <br />
 
-        {tableData && [...tableData].map(([location, data]) => (
-            <>
+        {tableData && [...tableData].map(([location, data], i) => (
+            <div key={i}>
                 <Table
                     title={() => <b>{location}</b>}
                     bordered
@@ -123,7 +121,7 @@ export default function LocationSummary() {
                     size='small'
                 />
                 <br />
-            </>
+            </div>
         ))}
     </>
 }
