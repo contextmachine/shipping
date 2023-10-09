@@ -10,32 +10,7 @@ import { Shipping } from "@/interfaces/Shipping";
 import { User } from "@/interfaces/UserInterface";
 import { useRouter } from "next/router";
 import { Table } from "antd";
-import { summaryColumns } from "./columns";
-
-type SummaryByDestination = Map<string, SummaryData>
-type SummaryByType = Map<string, Summary>
-type SummaryByLocation = Map<string, SummaryByType>
-
-
-export interface Summary {
-    recieved: SummaryByDestination,
-    created: SummaryByDestination,
-    sended: SummaryByDestination,
-}
-
-export interface SummaryData {
-    count: number,
-    shippings: Shipping[]
-}
-
-
-export interface SummaryDataType {
-    key: string
-    content: string
-    recieved: SummaryByDestination
-    created: SummaryByDestination
-    sended: SummaryByDestination
-}
+import { Summary, SummaryByLocation, SummaryByType, summaryColumns, SummaryData, SummaryDataType } from "./columns";
 
 
 export const LocationSummary = (): JSX.Element => {

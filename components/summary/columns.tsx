@@ -4,8 +4,32 @@ import { ColumnsType } from "antd/es/table"
 import Link from "next/link"
 import styled from "styled-components"
 import { statusMap } from "../Status"
-import { Summary, SummaryData, SummaryDataType } from "./summary"
 
+
+export type SummaryByDestination = Map<string, SummaryData>
+export type SummaryByType = Map<string, Summary>
+export type SummaryByLocation = Map<string, SummaryByType>
+
+
+export interface Summary {
+    recieved: SummaryByDestination,
+    created: SummaryByDestination,
+    sended: SummaryByDestination,
+}
+
+export interface SummaryData {
+    count: number,
+    shippings: Shipping[]
+}
+
+
+export interface SummaryDataType {
+    key: string
+    content: string
+    recieved: SummaryByDestination
+    created: SummaryByDestination
+    sended: SummaryByDestination
+}
 
 export const SmallTag = styled.div<{ $status: string }>`
     display: flex;
