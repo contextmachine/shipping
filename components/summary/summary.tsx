@@ -16,6 +16,7 @@ type SummaryByDestination = Map<string, SummaryData>
 type SummaryByType = Map<string, Summary>
 type SummaryByLocation = Map<string, SummaryByType>
 
+
 export interface Summary {
     recieved: SummaryByDestination,
     created: SummaryByDestination,
