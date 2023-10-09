@@ -10,7 +10,7 @@ import { Shipping } from "@/interfaces/Shipping";
 import { User } from "@/interfaces/UserInterface";
 import { useRouter } from "next/router";
 import { Table } from "antd";
-import { Summary, SummaryByLocation, SummaryByType, summaryColumns, SummaryData, SummaryDataType } from "./columns";
+import { Summary, SummaryByLocation, SummaryByType, summaryColumns, SummaryData, SummaryDataType } from "./summary-columns";
 
 
 export const LocationSummary = (): JSX.Element => {
