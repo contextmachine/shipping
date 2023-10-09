@@ -12,9 +12,9 @@ import { useAdminOnly, useUser } from "@/components/hooks/useUser";
 
 
 interface DateState {
-    createdAt: string | null,
-    sendedAt: string | null,
-    recievedAt: string | null
+    createdAt: Date | null,
+    sendedAt: Date | null,
+    recievedAt: Date | null
 }
 
 const formItemLayout = { labelCol: { span: 4 }, wrapperCol: { span: 14 } }
@@ -55,17 +55,17 @@ export default function Edit() {
                 recievedAt: null
             }
             if (status === 'created') {
-                newDate.createdAt = new Date().toISOString()
+                newDate.createdAt = new Date()
                 newDate.sendedAt = null
                 newDate.recievedAt = null
             } else if (status === 'sended') {
-                newDate.createdAt = shipping.createdAt ?? new Date().toISOString()
-                newDate.sendedAt = new Date().toISOString()
+                newDate.createdAt = shipping.createdAt ?? new Date()
+                newDate.sendedAt = new Date()
                 newDate.recievedAt = null
             } else {
                 newDate.createdAt = shipping.createdAt
-                newDate.sendedAt = shipping.sendedAt ?? new Date().toISOString()
-                newDate.recievedAt = new Date().toISOString()
+                newDate.sendedAt = shipping.sendedAt ?? new Date()
+                newDate.recievedAt = new Date()
             }
             setDateState(newDate)
         }

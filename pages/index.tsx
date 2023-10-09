@@ -1,7 +1,6 @@
 import { _Head } from "@/components"
 import { useRouter } from "next/router"
-import { useEffect, useMemo, useState } from "react"
-import { User } from "../interfaces/UserInterface"
+import { useMemo, useState } from "react"
 import { Button, Card, Dropdown, MenuProps, Space } from "antd"
 import {
     UserOutlined,
@@ -12,7 +11,7 @@ import {
 import ShippingTable from "@/components/shippingTable/ShippingTable"
 import LocationSummary from "@/components/summary/Summary"
 import { useLogin, useUser } from "@/components/hooks/useUser"
-import { Logistic } from "@/components/logistic/logistic"
+import { Logistic } from "@/components/logistic/Logistic"
 
 const lahtaUserId = '4f5cf275-0964-4f8a-a5ad-f0140b429182'
 
