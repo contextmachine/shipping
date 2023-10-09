@@ -10,7 +10,7 @@ import { Shipping } from "@/interfaces/Shipping";
 import { User } from "@/interfaces/UserInterface";
 import { useRouter } from "next/router";
 import { Table } from "antd";
-import { summaryColumns } from "./Columns";
+import { summaryColumns } from "./columns";
 
 type SummaryByDestination = Map<string, SummaryData>
 type SummaryByType = Map<string, Summary>

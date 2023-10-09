@@ -1,15 +1,14 @@
 import { parseShippings } from "@/graphql/parsers/parsers"
 import { GET_SHIPPINGS } from "@/graphql/queries"
-import { Shipping } from "@/interfaces/Shipping"
 import { User } from "@/interfaces/UserInterface"
 import { dateInRange, groupByOneKey } from "@/utils"
 import { DateRange } from "@/utils/types"
 import { useQuery } from "@apollo/client"
 import { Table } from "antd"
 import { useRouter } from "next/router"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 import DateRangePickerComponent from "../DateRangePicker"
-import { logisticColumns, LogisticDataType, logisticStatusFilters, ShippingByStatus } from "./Columns"
+import { logisticColumns, LogisticDataType, logisticStatusFilters, ShippingByStatus } from "./columns"
 
 const initialValue = () => ({
     created: [],

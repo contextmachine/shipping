@@ -4,7 +4,7 @@ import { ColumnsType } from "antd/es/table"
 import Link from "next/link"
 import styled from "styled-components"
 import { statusMap } from "../Status"
-import { Summary, SummaryData, SummaryDataType } from "./Summary"
+import { Summary, SummaryData, SummaryDataType } from "./summary"
 
 
 export const SmallTag = styled.div<{ $status: string }>`
