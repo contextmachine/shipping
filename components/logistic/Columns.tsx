@@ -1,13 +1,25 @@
 import { Shipping } from "@/interfaces/Shipping"
 import { formatDate, formatLocation } from "@/utils"
-import { Divider, QRCode, Space, Tag } from "antd"
+import { Divider, Tag } from "antd"
 import { ColumnsType } from "antd/es/table"
 import Link from "next/link"
 import { statusMap } from "../Status"
-import { SmallTag } from "../summary/Columns"
+import styled from "styled-components"
 
 
 
+export const SmallTag = styled.div<{ $status: string }>`
+    display: flex;
+    background-color: ${({ $status }) => statusMap.get($status)?.hexColorBg};
+    border: 1px solid ${({ $status }) => statusMap.get($status)?.hexColor};
+    color: ${({ $status }) => statusMap.get($status)?.hexColor};
+    height: 16px;
+    border-radius: 10px;
+    padding: 2px 2px 2px 2px;
+    margin: 2px;
+    align-items: center;
+    font-size: 11px;
+`
 
 export interface LogisticDataType {
     key: string

@@ -37,7 +37,7 @@ export interface SummaryDataType {
 }
 
 
-export default function LocationSummary() {
+export const LocationSummary = (): JSX.Element => {
 
     const [dateRange, setDateRange] = useState<DateRange | undefined | null>()
     const { data } = useQuery(GET_SHIPPINGS)
