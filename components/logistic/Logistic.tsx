@@ -16,7 +16,7 @@ const initialValue = () => ({
     recieved: []
 })
 
-export const Logistic = (): JSX.Element => {
+export default function Logistic() {
 
     const router = useRouter()
     const [dateRange, setDateRange] = useState<DateRange | undefined | null>()

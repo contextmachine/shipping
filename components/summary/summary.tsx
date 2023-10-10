@@ -13,7 +13,7 @@ import { Table } from "antd";
 import { Summary, SummaryByLocation, SummaryByType, summaryColumns, SummaryData, SummaryDataType } from "./summary-columns";
 
 
-export const LocationSummary = (): JSX.Element => {
+export default function LocationSummary() {
 
     const [dateRange, setDateRange] = useState<DateRange | undefined | null>()
     const { data } = useQuery(GET_SHIPPINGS)
