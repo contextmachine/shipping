@@ -1,7 +1,7 @@
 import { Shipping } from "@/interfaces/Shipping"
 import { Divider, Tag } from "antd"
 import { statusMap } from "../Status"
-import { ShippingByStatus } from "./logistic-columns"
+import { ShippingByStatus } from "./LogisticColumns"
 import styled from "styled-components"
 import Link from "next/link"
 import { formatDate, formatLocation } from "@/utils"

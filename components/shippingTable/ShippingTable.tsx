@@ -8,7 +8,7 @@ import { TableFilters } from "./filters/Filters";
 import { User } from '@/interfaces/UserInterface';
 import { useRouter } from 'next/router';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
-import { DataType, initialColumns } from "./columns";
+import { DataType, initialColumns } from "./Columns";
 import { useUser } from "../hooks/useUser";
 
 export interface ShippintTableProps {

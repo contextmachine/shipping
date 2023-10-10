@@ -8,7 +8,7 @@ import { Table } from "antd"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import DateRangePickerComponent from "../DateRangePicker"
-import { logisticColumns, LogisticDataType, logisticStatusFilters, ShippingByStatus } from "./logistic-columns"
+import { logisticColumns, LogisticDataType, logisticStatusFilters, ShippingByStatus } from "./LogisticColumns"
 
 const initialValue = () => ({
     created: [],
@@ -16,7 +16,7 @@ const initialValue = () => ({
     recieved: []
 })
 
-export default function Logistic() {
+const Logistic = () => {
 
     const router = useRouter()
     const [dateRange, setDateRange] = useState<DateRange | undefined | null>()
@@ -109,3 +109,5 @@ export default function Logistic() {
 
     </>
 }
+
+export default Logistic
