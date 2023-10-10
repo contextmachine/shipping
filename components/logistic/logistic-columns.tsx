@@ -1,6 +1,6 @@
 import { Shipping } from "@/interfaces/Shipping"
 import { ColumnsType } from "antd/es/table"
-import ShippingTotal from "./logistic-cell"
+import ShippingTotal from "./LogisticCell"
 
 export interface LogisticDataType {
     key: string

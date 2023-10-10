@@ -10,8 +10,8 @@ import {
 } from '@ant-design/icons';
 import ShippingTable from "@/components/shippingTable/ShippingTable"
 import { useLogin, useUser } from "@/components/hooks/useUser"
-import Logistic from "@/components/logistic/logistic"
-import LocationSummary from "@/components/summary/summary"
+import LocationSummary from "@/components/summary/Summary";
+import Logistic from "@/components/logistic/Logistic";
 
 const lahtaUserId = '4f5cf275-0964-4f8a-a5ad-f0140b429182'
 
