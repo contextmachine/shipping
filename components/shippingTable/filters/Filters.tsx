@@ -32,6 +32,9 @@ export function TableFilters(props: TableFiltersProps) {
     const [searchId, setSearchId] = useState<number | undefined>(undefined)
     const [filters, setFilters] = useState<Filters>(new Map(initialColumns.map((x) => ([x.key! as string, undefined]))))
 
+
+    const [privateFiltered, setPrivateFiltered] = useState<Shipping[]>([])
+
     useEffect(() => {
         let filtered = shippings;
 
@@ -54,20 +57,22 @@ export function TableFilters(props: TableFiltersProps) {
                 })
             }
         })
-        setFiltered(filtered)
-    }, [shippings, filters, setFiltered, userFilters])
+
+        setPrivateFiltered(filtered)
+    }, [shippings, filters, setFiltered, userFilters, user])
 
 
     useEffect(() => {
-        let filtered = shippings;
+        let filtered = privateFiltered
 
         if (searchId) {
-            filtered = shippings.filter(shipping =>
+            filtered = filtered.filter(shipping =>
                 shipping.number.toString().startsWith(searchId.toString())
             )
         }
+
         setFiltered(filtered)
-    }, [searchId, setFiltered, shippings])
+    }, [privateFiltered, searchId, setFiltered, shippings])
 
 
     const clearColumnFilters = () => {
@@ -77,6 +82,7 @@ export function TableFilters(props: TableFiltersProps) {
 
     return <>
         {user.role !== 'admin' && <UserFilter
+            user={user}
             userFilters={userFilters}
             setUserFilters={setUserFilters}
         />}

@@ -46,6 +46,8 @@ const Logistic = () => {
 
             const groupByType = groupByOneKey(shippingList, x => x.contentType)
 
+            groupByType.set('ВСЕ ТИПЫ', shippingList)
+
             const tableData: LogisticDataType[] = [...groupByType.entries()].map(([type, shippings]) => {
                 const row: LogisticDataType = {
                     contentType: type,
@@ -75,9 +77,16 @@ const Logistic = () => {
                 return row
             })
 
-            console.log(tableData)
+            const sorted = tableData.sort((a, b) => a.contentType.localeCompare(b.contentType))
 
-            setTableData(tableData.sort((a, b) => a.contentType.localeCompare(b.contentType)))
+            const x = sorted.findIndex(x => x.contentType === 'ВСЕ ТИПЫ')
+
+            const a = [
+                sorted[x],
+                ...sorted.slice(0, x),
+                ...sorted.slice(x + 1)]
+
+            setTableData(a)
         }
     }, [data, dateRange])
 

@@ -59,6 +59,7 @@ export default function ShippingTable(props: ShippintTableProps) {
 
 
     useEffect(() => {
+        console.log('data', filtered)
         setTableData(shippigDataToTableData(filtered))
     }, [filtered])
 
