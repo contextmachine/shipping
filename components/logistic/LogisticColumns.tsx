@@ -9,6 +9,8 @@ export interface LogisticDataType {
     hot2frez: ShippingByStatus
     frez2hot: ShippingByStatus
     hot2lahta: ShippingByStatus
+    hot2min: ShippingByStatus
+    min2hot: ShippingByStatus
     expand: boolean
 }
 
@@ -46,10 +48,26 @@ export const logisticColumns: ColumnsType<LogisticDataType> = [
         align: 'center',
         render: (value, record, index) => <ShippingTotal data={record.frez2hot} expand={record.expand} />,
     },
+
+    {
+        title: 'Хотьково → Минск',
+        dataIndex: 'hot2min',
+        key: 'hot2min',
+        align: 'center',
+        render: (value, record, index) => <ShippingTotal data={record.hot2min} expand={record.expand} />,
+    },
+    {
+        title: 'Минск → Хотьково',
+        dataIndex: 'min2hot',
+        key: 'min2hot',
+        align: 'center',
+        render: (value, record, index) => <ShippingTotal data={record.min2hot} expand={record.expand} />,
+    },
+
     {
         title: 'Хотьково → Лахта',
-        dataIndex: 'hot2lahta_created',
-        key: 'hot2lahta_created',
+        dataIndex: 'hot2lahta',
+        key: 'hot2lahta',
         align: 'center',
         render: (value, record, index) => <ShippingTotal data={record.hot2lahta} expand={record.expand} />,
     },
@@ -78,6 +96,18 @@ export const logisticStatusFilters = [
         key: `frez2hot`,
         filter: (shipping: Shipping) =>
             shipping.from === '3 — Фрезеровка' &&
+            shipping.to === '2 — Хотьково',
+    },
+    {
+        key: `hot2min`,
+        filter: (shipping: Shipping) =>
+            shipping.from === '2 — Хотьково' &&
+            shipping.to === '3/1 — Фрез Минск',
+    },
+    {
+        key: `min2hot`,
+        filter: (shipping: Shipping) =>
+            shipping.from === '3/1 — Фрез Минск' &&
             shipping.to === '2 — Хотьково',
     },
 ]

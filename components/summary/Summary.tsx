@@ -26,6 +26,8 @@ export default function LocationSummary() {
 
         if (!summary) return tables
 
+        console.log(summary)
+
         Array.from(summary.entries())
             .sort((a, b) => a[0].localeCompare(b[0]))
             .map(([location, types]) => {

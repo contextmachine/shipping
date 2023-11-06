@@ -57,6 +57,8 @@ const Logistic = () => {
                     hot2lahta: initialValue(),
                     hot2frez: initialValue(),
                     frez2hot: initialValue(),
+                    hot2min: initialValue(),
+                    min2hot: initialValue(),
                 }
 
                 shippings.forEach(shipping => {
